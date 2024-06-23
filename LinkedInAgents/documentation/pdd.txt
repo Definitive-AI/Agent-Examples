@@ -1,0 +1,40 @@
+Here is the updated process description with all the requested components:
+
+Process Trigger:
+The process of finding LinkedIn posts to comment on should be done regularly, such as daily or a few times per week, in order to consistently engage with relevant audiences and grow the company's followers.
+
+Process Description:
+The interviewee is responsible for managing three LinkedIn company pages - Redstone Security, Redstone Testido, and one other. To find relevant posts to comment on, they go to the Redstone Security page and click on the "Following" tab. This shows a feed of posts from companies that Redstone Security follows, which include offset conception, Cyber Security Hub, Hack the Box, Hacker News, security racks, SC media, and some of their partners like grpc, KNC SS, Cloud Security Partners, and Packet Watch.
+
+The interviewee scrolls through this feed looking for posts that already have a good number of comments (e.g. 50-100+). For those posts, they read through the existing comments and find ones to "like" and reply to in order to elicit a response and interaction. The replies are written to be specific to what that commenter said, often asking a question or prompting further discussion. 
+
+For newer posts with few comments, the interviewee will write an original comment based on the post content. They sometimes use ChatGPT to help generate a comment by copying the post text, pasting it into ChatGPT with instructions to write a comment, and then posting ChatGPT's output. However, the interviewee found replying to existing comments works better than original comments for getting the post author and commenters to follow Redstone Security back.
+
+High-Level Steps:
+1. Go to linkedin.com/feed
+2. Click on the Redstone Security company page from the "Pages" list
+3. Click on the "Following" tab to see posts from companies Redstone Security follows
+4. Scroll through the feed looking for posts with 50-100+ comments already
+5. Read through the comments on those popular posts
+6. Like and reply to specific comments to prompt further discussion and interaction
+    - Tailor the reply to what the commenter said
+    - Ask a question or note something insightful the commenter mentioned
+    - Goal is to elicit a response from the commenter
+7. For new posts without many comments yet:
+    - Write an original comment based on the post content
+    - Can use ChatGPT for help generating the comment by pasting post text and asking it to write a comment
+8. Post the replies/comments
+9. Aim for comments that will make the post author and commenters likely to follow Redstone Security back
+10. Repeat the process regularly (e.g. daily or a few times per week)
+
+Documentation/Context:
+- List of companies Redstone Security follows for post sources
+- Tone/voice to mimic in the comments based on the interviewee's example comments
+- ChatGPT prompts for generating comments
+
+Exception Handling:
+- If a post is very new and doesn't have enough comments to reply to yet, write an original comment instead
+- If a post or comment is too nuanced or specific for ChatGPT to write a good reply, the human should review and write the reply themselves to ensure it is relevant and will elicit a response
+- If the feed doesn't have any good posts to comment on that day, skip it and check again the next scheduled day rather than forcing comments on irrelevant posts
+
+The interviewee noted that while ChatGPT can help with original comments on posts, replying to existing comments in a nuanced way that elicits a response is likely too difficult for an AI agent currently and requires human review and writing in most cases. The key is to write replies specific to each comment in a way that prompts discussion, rather than just generic "thanks for sharing!" type comments.
