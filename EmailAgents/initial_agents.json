@@ -1,0 +1,66 @@
+[
+    {
+        "id": "1",
+        "name": "Encrypted Email Detector",
+        "description": "This agent is responsible for monitoring the incoming email stream, detecting encrypted or protected emails based on predefined criteria, and triggering the subsequent steps in the process.",
+        "tasks": [
+            {"description": "Continuously monitor the designated inbox for incoming emails", "reasoning": "", "complexity": "2"},
+            {"description": "Analyze email subject lines and bodies to identify patterns, keywords, or indicators of encrypted or protected content", "reasoning": "", "complexity": "3"},
+            {"description": "Flag detected encrypted or protected emails and trigger the Encrypted Email Authenticator agent", "reasoning": "", "complexity": "2"},
+            {"description": "If the email does not match any predefined criteria but still appears to be encrypted or protected, flag it for human review", "reasoning": "", "complexity": "2"},
+            {"description": "Incorporate human feedback on false positives or false negatives to improve detection accuracy over time", "reasoning": "", "complexity": "3"}
+        ],
+        "documentation": [
+            {"description": "Process Description and High-Level Steps document", "reasoning": "The agent requires access to the document that outlines the steps for viewing and saving encrypted or protected emails in Outlook, including identifying encrypted emails, to accurately detect and flag relevant emails.", "location": "[Insert location or URL if explicitly mentioned in the Process Description]"}
+        ],
+        "trigger": "The receipt of a new email in the designated monitored inbox.",
+        "reasoning": ""
+    },
+    {
+        "id": "2",
+        "name": "Encrypted Email Authenticator",
+        "description": "This agent is responsible for logging into the encrypted email servers and navigating to the encrypted email message.",
+        "tasks": [
+            {"description": "Receive triggered encrypted email from the Encrypted Email Detector agent", "reasoning": "", "complexity": "1"},
+            {"description": "Automatically log in to the encrypted email server using securely stored credentials", "reasoning": "If login fails due to invalid credentials or changed login process, notify human operator for manual intervention and updating of credentials", "complexity": "4"},
+            {"description": "Navigate to and open the encrypted email message", "reasoning": "If navigation fails due to unexpected page layout or errors, capture screenshot of the error and notify human operator for manual review and guidance", "complexity": "3"},
+            {"description": "Trigger the Encrypted Email Screenshotter agent upon successful navigation to the email message", "reasoning": "", "complexity": "1"}
+        ],
+        "documentation": [
+            {"description": "Exception Handling document", "reasoning": "The agent needs access to the instructions on accessing the encrypted server if a password reset is required after 12 hours of inactivity, to handle login failures and ensure continuous access to encrypted emails.", "location": "[Insert location or URL if explicitly mentioned in the Process Description]"}
+        ],
+        "trigger": "Flagged encrypted or protected email from the Encrypted Email Detector agent.",
+        "reasoning": ""
+    },
+    {
+        "id": "3",
+        "name": "Encrypted Email Screenshotter",
+        "description": "This agent is responsible for capturing screenshots of the encrypted email content.",
+        "tasks": [
+            {"description": "Receive triggered email navigation success from the Encrypted Email Authenticator agent", "reasoning": "", "complexity": "1"},
+            {"description": "Capture a screenshot of the full email content", "reasoning": "If screenshot capture fails or results in an incomplete or unreadable image, retry capture with adjusted settings or notify human operator for manual capture", "complexity": "2"},
+            {"description": "Trigger the Encrypted Email Data Extractor agent upon successful screenshot capture", "reasoning": "", "complexity": "1"}
+        ],
+        "documentation": [
+            {"description": "Process Description and High-Level Steps document", "reasoning": "The agent requires access to the document that outlines the steps for viewing and saving encrypted or protected emails in Outlook, including taking screenshots, to ensure accurate and complete capture of the email content.", "location": "[Insert location or URL if explicitly mentioned in the Process Description]"}
+        ],
+        "trigger": "Successful navigation to the encrypted email message by the Encrypted Email Authenticator agent.",
+        "reasoning": ""
+    },
+    {
+        "id": "4",
+        "name": "Encrypted Email Data Extractor",
+        "description": "This agent is responsible for extracting relevant data from the email screenshot, saving it to a secure storage system, and generating reports and notifications.",
+        "tasks": [
+            {"description": "Receive triggered email screenshot from the Encrypted Email Screenshotter agent", "reasoning": "", "complexity": "1"},
+            {"description": "Apply OCR and NLP techniques to extract text content and metadata from the screenshot", "reasoning": "If OCR or NLP fails to extract key content or metadata, flag the email for human review and manual data extraction", "complexity": "4"},
+            {"description": "Save the screenshot and extracted data to a secure storage system with appropriate naming conventions and tags", "reasoning": "If saving to the storage system fails due to connectivity issues or permission errors, retry the save operation and notify human operator if the issue persists", "complexity": "3"},
+            {"description": "Generate reports and notifications on the processing status and results", "reasoning": "Include any human intervention or manual processing steps in the reports for auditing and quality control purposes", "complexity": "2"}
+        ],
+        "documentation": [
+            {"description": "Process Description and High-Level Steps document", "reasoning": "The agent requires access to the document that outlines the steps for viewing and saving encrypted or protected emails in Outlook, including forwarding screenshots for permanent record-keeping, to ensure proper storage and reporting of the extracted email data.", "location": "[Insert location or URL if explicitly mentioned in the Process Description]"}
+        ],
+        "trigger": "Successful screenshot capture by the Encrypted Email Screenshotter agent.",
+        "reasoning": ""
+    }
+]

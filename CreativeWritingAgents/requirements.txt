@@ -1,0 +1,15 @@
+chromadb==0.4.17
+sentence-transformers
+pysqlite3-binary==0.5.2
+google_search_results==2.4.2
+langchain==0.1.16
+langchain_anthropic==0.1.11
+langchain_community==0.0.36
+langchain_core==0.1.48
+langgraph==0.0.39
+pydantic==2.7.1
+python-dotenv==1.0.1
+pytrends==4.9.2
+st_pages==0.4.5
+streamlit==1.32.2
+bs4 

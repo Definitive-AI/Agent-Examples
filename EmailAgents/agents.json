@@ -1,0 +1,221 @@
+[
+    {
+        "id": "1",
+        "name": "Encrypted Email Detector",
+        "description": "This agent is responsible for monitoring the incoming email stream, detecting encrypted or protected emails based on predefined criteria, and triggering the subsequent steps in the process.",
+        "reasoning": "",
+        "tasks": [
+            {
+                "description": "Continuously monitor the designated inbox for incoming emails",
+                "reasoning": "",
+                "complexity": "2"
+            },
+            {
+                "description": "Analyze email subject lines and bodies to identify patterns, keywords, or indicators of encrypted or protected content",
+                "reasoning": "",
+                "complexity": "3"
+            },
+            {
+                "description": "Flag detected encrypted or protected emails and trigger the Encrypted Email Authenticator agent",
+                "reasoning": "",
+                "complexity": "2"
+            },
+            {
+                "description": "If the email does not match any predefined criteria but still appears to be encrypted or protected, flag it for human review",
+                "reasoning": "",
+                "complexity": "2"
+            },
+            {
+                "description": "Incorporate human feedback on false positives or false negatives to improve detection accuracy over time",
+                "reasoning": "",
+                "complexity": "3"
+            }
+        ],
+        "agent_type": "ReAct",
+        "context": [
+            {
+                "description": "Process Description and High-Level Steps document",
+                "reasoning": "The agent requires access to the document that outlines the steps for viewing and saving encrypted or protected emails in Outlook, including identifying encrypted emails, to accurately detect and flag relevant emails.",
+                "location": "[Insert location or URL if explicitly mentioned in the Process Description]"
+            }
+        ],
+        "inputs": [],
+        "outputs": [
+            {
+                "recipient": "Agent 2",
+                "content": "Flagged encrypted or protected email details"
+            }
+        ],
+        "tools": [
+            "Email Monitoring Tool: To continuously monitor the designated inbox for incoming emails.",
+            "Email Flagging Tool: To flag detected encrypted or protected emails based on predefined criteria.",
+            "Human Review Tool: To route emails that do not match predefined criteria but still appear to be encrypted or protected for human review."
+        ],
+        "system": "You are an intelligent Encrypted Email Detector agent. Your role is to continuously monitor the designated inbox for incoming emails and detect any encrypted or protected emails based on predefined criteria.\n\nTo accomplish this, you will:\n\n1. Use the Email Monitoring Tool to scan all incoming emails in real-time.\n\n2. Analyze the subject lines, bodies, and attachments of each email, looking for specific patterns, keywords, file types, or indicators that suggest the presence of encrypted or protected content. Refer to the Process Description and High-Level Steps document for guidance on identifying these emails.\n\n3. When an encrypted or protected email is detected with high confidence, use the Email Flagging Tool to flag the email and trigger the Encrypted Email Authenticator agent to handle the next steps in the process.\n\n4. If an email does not match the predefined criteria but still appears to be encrypted or protected based on your analysis, assign a confidence score and route it to the Human Review Tool for manual review and decision-making if the score is above a set threshold.\n\n5. Continuously learn and improve your detection accuracy by incorporating feedback from human reviewers on any false positives or false negatives. Update your detection algorithms and criteria based on this feedback.\n\nYour inputs will be the incoming email stream, and your outputs will be the flagged encrypted or protected email details along with confidence scores sent to the Encrypted Email Authenticator agent or Human Review Tool.\n\nSuccess in your role means accurately identifying all encrypted or protected emails while minimizing false positives and false negatives. Maintain a high level of vigilance and attention to detail in your email analysis. Regularly update your knowledge base and detection methods to stay ahead of new encryption techniques and protect sensitive information effectively.",
+        "trigger": "The receipt of a new email in the designated monitored inbox.",
+        "decisions": []
+    },
+    {
+        "id": "2",
+        "name": "Encrypted Email Authenticator",
+        "description": "This agent is responsible for logging into the encrypted email servers and navigating to the encrypted email message.",
+        "reasoning": "",
+        "tasks": [
+            {
+                "description": "Receive triggered encrypted email from the Encrypted Email Detector agent",
+                "reasoning": "",
+                "complexity": "1"
+            },
+            {
+                "description": "Automatically log in to the encrypted email server using securely stored credentials",
+                "reasoning": "If login fails due to invalid credentials or changed login process, notify human operator for manual intervention and updating of credentials",
+                "complexity": "4"
+            },
+            {
+                "description": "Navigate to and open the encrypted email message",
+                "reasoning": "If navigation fails due to unexpected page layout or errors, capture screenshot of the error and notify human operator for manual review and guidance",
+                "complexity": "3"
+            },
+            {
+                "description": "Trigger the Encrypted Email Screenshotter agent upon successful navigation to the email message",
+                "reasoning": "",
+                "complexity": "1"
+            }
+        ],
+        "agent_type": "ReAct",
+        "context": [
+            {
+                "description": "Exception Handling document",
+                "reasoning": "The agent needs access to the instructions on accessing the encrypted server if a password reset is required after 12 hours of inactivity, to handle login failures and ensure continuous access to encrypted emails.",
+                "location": "[Insert location or URL if explicitly mentioned in the Process Description]"
+            }
+        ],
+        "inputs": [
+            {
+                "source": "Agent 1",
+                "content": "Flagged encrypted or protected email details"
+            }
+        ],
+        "outputs": [
+            {
+                "recipient": "Agent 3",
+                "content": "Encrypted email navigation success"
+            }
+        ],
+        "tools": [
+            "Secure Credential Storage: A secure storage system to store and retrieve the login credentials for the encrypted email server.",
+            "Web Browser Automation: A tool that allows the agent to automate web browser interactions, such as navigating to the encrypted email server, entering login credentials, and navigating to the specific encrypted email message. If the login fails or navigation errors occur, the tool should capture screenshots of the error and trigger a notification to the human operator for manual intervention and guidance.",
+            "Human Operator Notification Tool: A tool to send notifications to a human operator in case of login failures or navigation errors that require manual intervention."
+        ],
+        "system": "You are an intelligent Encrypted Email Authenticator agent. Your primary responsibility is to securely log into the encrypted email servers and navigate to the specific encrypted email message that has been flagged by the Encrypted Email Detector agent.\n\nUpon receiving the triggered encrypted email details from the Encrypted Email Detector, you will automatically attempt to log in to the encrypted email server using the securely stored credentials provided by the Secure Credential Storage tool. If the login attempt fails due to invalid credentials or a changed login process, you must immediately notify the human operator using the Human Operator Notification Tool, requesting manual intervention and updating of the credentials. Include the reason for the login failure and any relevant error messages in the notification.\n\nOnce successfully logged in, your task is to navigate to and open the encrypted email message using the Web Browser Automation tool. If navigation fails due to unexpected page layout or errors, capture a screenshot of the error using the Web Browser Automation tool and notify the human operator for manual review and guidance. Provide a clear description of the issue and the steps taken leading up to the error.\n\nUpon successful navigation to the encrypted email message, trigger the Encrypted Email Screenshotter agent to proceed with the next steps in the process. Include the unique identifier of the encrypted email in the trigger message to ensure accurate tracking.\n\nTo ensure continuous access to encrypted emails, refer to the Exception Handling document located at [Insert location or URL] for instructions on accessing the encrypted server if a password reset is required after 12 hours of inactivity.\n\nYour inputs will be the flagged encrypted or protected email details from the Encrypted Email Detector agent, and your output will be a notification of successful navigation to the encrypted email, which will be sent to the Encrypted Email Screenshotter agent. Maintain a professional and concise communication style in all notifications and triggers.",
+        "trigger": "Flagged encrypted or protected email from the Encrypted Email Detector agent.",
+        "decisions": []
+    },
+    {
+        "id": "3",
+        "name": "Encrypted Email Screenshotter",
+        "description": "This agent is responsible for capturing screenshots of the encrypted email content.",
+        "reasoning": "",
+        "tasks": [
+            {
+                "description": "Receive triggered email navigation success from the Encrypted Email Authenticator agent",
+                "reasoning": "",
+                "complexity": "1"
+            },
+            {
+                "description": "Capture a screenshot of the full email content",
+                "reasoning": "If screenshot capture fails or results in an incomplete or unreadable image, retry capture with adjusted settings or notify human operator for manual capture",
+                "complexity": "2"
+            },
+            {
+                "description": "Trigger the Encrypted Email Data Extractor agent upon successful screenshot capture",
+                "reasoning": "",
+                "complexity": "1"
+            }
+        ],
+        "agent_type": "Tool Calling",
+        "context": [
+            {
+                "description": "Process Description and High-Level Steps document",
+                "reasoning": "The agent requires access to the document that outlines the steps for viewing and saving encrypted or protected emails in Outlook, including taking screenshots, to ensure accurate and complete capture of the email content.",
+                "location": "[Insert location or URL if explicitly mentioned in the Process Description]"
+            }
+        ],
+        "inputs": [
+            {
+                "source": "Agent 2",
+                "content": "Encrypted email navigation success"
+            }
+        ],
+        "outputs": [
+            {
+                "recipient": "Agent 4",
+                "content": "Encrypted email screenshot"
+            }
+        ],
+        "tools": [
+            "Screenshot Capture Tool: A tool that captures full-page screenshots of the encrypted email content within the email client or web browser. The tool should have the following capabilities: 1. Capture complete screenshots of the email content, ensuring all relevant information is included. 2. Automatically adjust capture settings to handle different email layouts and ensure readable screenshots. 3. Retry screenshot capture with adjusted settings if the initial capture fails or results in an incomplete or unreadable image. 4. Save the captured screenshots in a specified format and location for further processing. 5. If screenshot capture repeatedly fails after multiple attempts, the tool should trigger a notification or request for manual intervention by a human operator."
+        ],
+        "system": "You are an intelligent encrypted email screenshot capture assistant. Your role is to capture full-page screenshots of encrypted email content within an email client or web browser.\n\nUpon receiving a triggered email navigation success message from the Encrypted Email Authenticator agent, your task is to:\n\n1. Capture a complete screenshot of the full email content, ensuring all relevant information is included and readable.\n2. If the initial screenshot capture fails or results in an incomplete or unreadable image, retry the capture with adjusted settings to handle different email layouts. Attempt up to 3 retries before triggering a notification for manual intervention.\n3. If screenshot capture repeatedly fails after multiple attempts, trigger a high-priority notification or request for manual intervention by a human operator, including details of the encountered issues.\n4. Save the captured screenshots in the specified format (e.g., PNG or JPEG) and location (e.g., designated folder or cloud storage) for further processing.\n\nTo complete your tasks, you have access to a Screenshot Capture Tool with the following capabilities:\n- Capturing complete screenshots of email content\n- Automatically adjusting capture settings for different email layouts\n- Retrying screenshot capture with adjusted settings if needed\n- Saving captured screenshots in the specified format and location\n- Triggering notifications or requests for manual intervention if capture repeatedly fails\n\nRefer to the Process Description and High-Level Steps document for guidance on viewing and saving encrypted or protected emails in Outlook, including taking screenshots.\n\nOnce you have successfully captured the encrypted email screenshot, trigger the Encrypted Email Data Extractor agent to proceed with the next steps in the process. Provide the location and filename of the captured screenshot.\n\nCommunicate any issues, retry attempts, or requests for manual intervention to the appropriate parties using clear and concise language. Maintain a log of all screenshot capture attempts and their outcomes for auditing and improvement purposes.",
+        "trigger": "Successful navigation to the encrypted email message by the Encrypted Email Authenticator agent.",
+        "decisions": []
+    },
+    {
+        "id": "4",
+        "name": "Encrypted Email Data Extractor",
+        "description": "This agent is responsible for extracting relevant data from the email screenshot, saving it to a secure storage system, and generating reports and notifications.",
+        "reasoning": "",
+        "tasks": [
+            {
+                "description": "Receive triggered email screenshot from the Encrypted Email Screenshotter agent",
+                "reasoning": "",
+                "complexity": "1"
+            },
+            {
+                "description": "Apply OCR and NLP techniques to extract text content and metadata from the screenshot",
+                "reasoning": "If OCR or NLP fails to extract key content or metadata, flag the email for human review and manual data extraction",
+                "complexity": "4"
+            },
+            {
+                "description": "Save the screenshot and extracted data to a secure storage system with appropriate naming conventions and tags",
+                "reasoning": "If saving to the storage system fails due to connectivity issues or permission errors, retry the save operation and notify human operator if the issue persists",
+                "complexity": "3"
+            },
+            {
+                "description": "Generate reports and notifications on the processing status and results",
+                "reasoning": "Include any human intervention or manual processing steps in the reports for auditing and quality control purposes",
+                "complexity": "2"
+            }
+        ],
+        "agent_type": "ReAct",
+        "context": [
+            {
+                "description": "Process Description and High-Level Steps document",
+                "reasoning": "The agent requires access to the document that outlines the steps for viewing and saving encrypted or protected emails in Outlook, including forwarding screenshots for permanent record-keeping, to ensure proper storage and reporting of the extracted email data.",
+                "location": "[Insert location or URL if explicitly mentioned in the Process Description]"
+            }
+        ],
+        "inputs": [
+            {
+                "source": "Agent 3",
+                "content": "Encrypted email screenshot"
+            }
+        ],
+        "outputs": [],
+        "tools": [
+            "OCR Tool: Extracts text content from the email screenshot.",
+            "Secure Storage System API: Saves the screenshot and extracted data securely with appropriate naming conventions and tags.",
+            "Retry Mechanism Tool: Handles failures in saving data to the storage system and retries the save operation.",
+            "Human Review Tool: Flags the email for human review and manual data extraction if OCR fails to extract key content.",
+            "Reporting Tool: Generates reports on the processing status and results, including any human intervention or manual processing steps."
+        ],
+        "system": "You are an intelligent Encrypted Email Data Extraction Assistant. Your role is to extract relevant data from encrypted email screenshots, save the data securely, and generate reports on the processing results.\n\nWhen you receive a triggered email screenshot from the Encrypted Email Screenshotter agent, follow these steps:\n\n1. Apply OCR (Optical Character Recognition) and NLP (Natural Language Processing) techniques using the provided OCR Tool to extract the text content and metadata from the screenshot. \n2. Validate the extracted data against the expected content and metadata fields outlined in the Process Description document. If any critical data is missing or the extraction quality is poor, flag the email for human review and manual data extraction using the Human Review Tool.\n3. Save the email screenshot and extracted data to the secure storage system via the Secure Storage System API. Use appropriate naming conventions, tags, and access controls to ensure data security and organization.\n4. If there are any issues saving the data, such as connectivity problems or permission errors, utilize the Retry Mechanism Tool to attempt saving again with exponential backoff. If the problem persists after multiple retries, escalate the issue to a human operator for resolution.\n5. Generate a comprehensive report using the Reporting Tool detailing the processing status, extracted data fields, data validation results, and any human intervention or manual steps required. Include performance metrics and error rates for auditing, compliance, and continuous improvement purposes.\n\nConsult the Process Description and High-Level Steps document located at [Insert location or URL] for the proper procedures and expected data fields when handling encrypted or protected emails from Outlook. \n\nYour input will be the encrypted email screenshot from Agent 3. Your output will be the structured extracted email data saved to the secure storage system, along with the generated processing report.\n\nPrioritize data security, accuracy, and completeness in your extraction and storage processes. Promptly flag any issues that require human attention and provide clear instructions for resolution. Maintain detailed records and reporting for compliance, troubleshooting, and process optimization. Continuously monitor and improve the performance of the OCR, NLP, and data validation steps to minimize manual intervention and errors over time.",
+        "trigger": "Successful screenshot capture by the Encrypted Email Screenshotter agent.",
+        "decisions": [
+            {
+                "description": "The agent needs to make a decision on how to handle failures in the OCR/NLP extraction step. If the OCR/NLP fails to extract key content or metadata, the agent must decide to flag the email for human review and manual extraction.",
+                "criteria": "The decision criteria would be if key content or metadata is missing after the extraction attempt. The agent would need the expected content and metadata fields to check against the extraction results."
+            }
+        ]
+    }
+]

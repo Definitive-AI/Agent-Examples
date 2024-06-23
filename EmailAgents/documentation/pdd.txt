@@ -1,0 +1,29 @@
+Based on the conversation, it seems the process being described is how to handle encrypted or protected emails in Outlook. Here is a summary of the key steps and details:
+
+Process Description:
+The process outlines how to view and save encrypted or protected emails received in Outlook. This is important to keep a record of the emails, as the sender (e.g. the state) may delete them after a certain time period (e.g. 30 days). Taking screenshots allows having a permanent copy for reference or documentation purposes, such as providing evidence in court.
+
+High-Level Steps:
+1. Identify that an email is encrypted or protected. This is indicated by text in the email like "encrypted message" or "protected message".
+2. Open the email and click the link that says something like "Read secure message". 
+3. If prompted, enter the login password for the encrypted server. A new password may need to be requested every 12 hours.
+4. The encrypted message will open. Take a screenshot of the full message.
+5. Forward the original email to yourself. 
+6. Paste the screenshot into the forwarded email and send it to yourself.
+7. The forwarded email with the screenshot will remain in your Sent folder for future reference.
+
+Exception Handling:
+- If you haven't logged into the encrypted server in the last 12 hours, you will be prompted for a password when trying to open the message. Request a new password, which will be emailed to you, enter it, and you will have access for another 12 hours.
+
+Process Trigger:
+The process is triggered whenever an encrypted or protected email is received in Outlook.
+
+Additional Context:
+- Printing the emails directly often results in problems or excess paper waste
+- Saving as PDF has also had issues
+- Screenshots have been the most reliable way to capture the full content
+- The screenshots have been used as evidence submitted to court in the past
+- The sender, in some cases the state agencies, delete emails after 30 days so having your own permanent copy is important
+
+Let me know if you need any clarification or have additional questions!
+

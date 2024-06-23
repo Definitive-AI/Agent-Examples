@@ -1,0 +1,110 @@
+Here is the updated process description with a few additions:
+
+Process Trigger:
+The article writing process is triggered when the requester provides a topic, target keyphrase, key ideas to include, and a product page to link to as the solution.
+
+Process Description:
+The process involves taking a topic and key ideas provided by the requester and writing a 700-1000 word article optimized for a target SEO keyphrase. The writer first selects the primary keyphrase by comparing options on Google Trends to determine which has the highest interest over the past 90-360 days. 
+
+The article is then written following a specific structure:
+- Headline (50-65 characters)
+- Intro paragraph (50-100 words) that uses the keyphrase in the first sentence 
+- 3 subheadlines, each followed by 2-3 paragraphs (under 100 words each)
+- 1-2 calls-to-action (to book a meeting or get a quote)
+- Closing paragraph
+
+The primary keyphrase is included in the title, 1 subheadline, 3x in the body text, the meta title, and meta description. Paragraphs are kept under 100 words with 250 words max between subheadlines. Sentences are varied in length but kept under 20 words in general, never exceeding 25 words. The article links out to a specific product page that should be mentioned as the solution.
+
+High-Level Steps:
+1. Review topic, key ideas, and target product page from requester 
+2. Determine primary keyphrase by comparing options on Google Trends for past 90-360 days
+3. Write headline (50-65 characters) 
+4. Write intro paragraph (50-100 words) using keyphrase in first sentence
+5. Write first subheadline
+6. Write 2-3 paragraphs under first subheadline, keeping under 100 words each 
+7. Add call-to-action (CTA) to book a meeting
+8. Write second subheadline 
+9. Write 2-3 paragraphs under second subheadline
+10. Write third subheadline, including primary keyphrase
+11. Write 2-3 paragraphs under third subheadline 
+12. Add CTA to get a quote
+13. Write closing paragraph
+14. Proofread and optimize, ensuring keyphrase is used in title, 1 subheadline, 3x in body text, meta title and meta description
+15. Include link to target product page, mentioning it as the solution
+16. Confirm article is 700-1000 words total, with no paragraphs over 100 words and no more than 250 words between subheadlines
+17. Provide article back to requester for review
+
+Documentation/Context:
+- Article brief from requester with topic, key ideas to include, target product page
+- SEO guidelines (keyphrase usage, word counts, formatting)
+- Examples of properly structured articles for reference
+- Access to Google Trends for keyphrase research
+Universal orchestrator to manage multiple RPA platforms like Blue Prism, UiPath, Automation anywhere.
+https://wonderbotz.com/intelligent-automation-technologies/aria-coe
+Product page to reference
+Mention and soft sell this product as the solution to Multi-platform RPA management
+https://wonderbotz.com/intelligent-automation-technologies/aria-cloud/
+
+Example of other article for style and company voice
+https://wonderbotz.com/articles/rpa-cloud-migration-why-secure-cloud-is-the-critical-path-to-ai-readiness/
+https://wonderbotz.com/articles/exciting-new-uses-for-chatgpt-and-ai-in-automation-technology/
+
+Exception Handling: 
+- If writer has questions about the topic, key ideas or target product page, reach out to requester for clarification
+- If unable to find a keyphrase that meets the interest criteria on Google Trends, consult requester for guidance
+- If article is coming up significantly short or long on word count, review with requester to adjust content as needed while maintaining proper structure
+
+Other notes:
+Article Outcomes:
+700-1000 words
+7th grade reading level
+
+SEO Optimized article that soft sells my product
+
+Paragraphs cannot excede 100 words
+Max 250 words between subheadlines
+Sentences should be 20 words or less. Occasionally go up to 25 words less than 10% of the time
+
+
+Article Format
+
+Headliine - 50-65 characters
+Intro paragraph - uses keyphrase in the first sentence. 50-100 words
+
+Subheadline
+2-3 paragraphs
+
+Call to action to book a meeting with our team
+
+Subheadline
+2-3 paragraphs
+
+Call to action to get a quote from our team
+
+Subheading
+Closing 1-2 paragraphs
+
+
+Topic:
+Multi-Platform RPA Management
+
+Key ideas to include:
+Traditionally automation companies have tried to lock you into using just their tech stack. As technology evolves ever faster the ability to use third party tools is more important.
+Some customers have built many automations on one platform but want to use the new tools of another.
+It used to be to change platforms you had to recode all of your automations
+Now you can keep the old automations running and innovate on a new platform or new tools and coordinate the hand off of tasks from one system to the other with a Universal Orchestrator.
+Multi-platform orchestration is cheaper than migrating your entire code base and more flexible.
+Allows you to take advantage of mixing in low cost alternatives with your top self RPA tools.
+
+SEO Glidelines
+
+Primary Key phrase:
+Multiplatform RPA Orchestration
+
+For SEO the Key phrase must be used in:
+The title
+1 subheadline
+3 times in the body text
+In the meta title
+In the meta description
+
