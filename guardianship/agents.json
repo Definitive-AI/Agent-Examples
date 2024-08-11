@@ -1,0 +1,369 @@
+[
+    {
+        "id": "1",
+        "name": "Document Processing and Preparation Agent",
+        "description": "This agent handles initial document generation, formatting, and preparation, leveraging Excel, VBA, and Word.",
+        "reasoning": "This agent is crucial for initiating the document preparation process and handling the initial data processing and document generation tasks.",
+        "tasks": [
+            {
+                "description": "Data Extraction from Excel",
+                "reasoning": "Necessary to gather required information for document generation",
+                "complexity": "2"
+            },
+            {
+                "description": "VBA-Assisted Data Merging",
+                "reasoning": "Efficiently combines data from multiple sources",
+                "complexity": "3"
+            },
+            {
+                "description": "Initial Word Document Generation",
+                "reasoning": "Creates the base documents for further processing",
+                "complexity": "3"
+            },
+            {
+                "description": "Data Verification Prompt",
+                "reasoning": "Ensures data accuracy and completeness",
+                "complexity": "2"
+            },
+            {
+                "description": "Automated Formatting in Word",
+                "reasoning": "Applies consistent formatting across documents",
+                "complexity": "3"
+            },
+            {
+                "description": "Document-Specific Processing (e.g., PDF merging for sealed documents)",
+                "reasoning": "Handles special requirements for certain document types",
+                "complexity": "4"
+            }
+        ],
+        "agent_type": "ReAct",
+        "context": [
+            {
+                "description": "Ideal template versions of each document type for guardianship renewal",
+                "reasoning": "Needed to generate initial documents correctly and ensure proper formatting",
+                "location": "",
+                "variable_name": "template_documents"
+            },
+            {
+                "description": "Guide explaining the structure of the Excel spreadsheet used for data input",
+                "reasoning": "Required to correctly extract and interpret data from the Excel file",
+                "location": "",
+                "variable_name": "excel_data_structure_guide"
+            },
+            {
+                "description": "Guidelines for consistent file naming and organization",
+                "reasoning": "Needed to ensure proper file management and organization throughout the process",
+                "location": "",
+                "variable_name": "file_naming_conventions"
+            }
+        ],
+        "inputs": [
+            {
+                "source": "Agent 4",
+                "content": "Initial data and document requirements"
+            }
+        ],
+        "outputs": [
+            {
+                "recipient": "Agent 2",
+                "content": "Prepared Word documents"
+            },
+            {
+                "recipient": "Agent 4",
+                "content": "Document processing status and any exceptions"
+            }
+        ],
+        "tools": [
+            {
+                "name": "Microsoft Office Automation Tool",
+                "description": "Enables interaction with Excel and Word, including data extraction, VBA execution, document generation, and formatting",
+                "variable_name": "office_automation_tool"
+            },
+            {
+                "name": "PDF Manipulation Tool",
+                "description": "Allows for PDF-specific operations such as merging documents, particularly for sealed documents",
+                "variable_name": "pdf_tool"
+            },
+            {
+                "name": "Data Verification Interface",
+                "description": "Provides a mechanism for human interaction to verify data accuracy and completeness",
+                "variable_name": "data_verification_interface"
+            }
+        ],
+        "system": "You are an advanced Document Processing and Preparation Assistant, expertly skilled in Microsoft Office applications, VBA scripting, and PDF manipulation. Your role is to efficiently process and prepare documents for guardianship renewal cases, ensuring accuracy, consistency, and legal compliance.\n\nYour tasks include: extracting data from Excel, merging data with VBA, generating Word documents, verifying data accuracy, applying automated formatting, and handling special processing like PDF merging for sealed documents. Utilize the office_automation_tool, pdf_tool, and data_verification_interface to complete these tasks.\n\nReference template_documents, excel_data_structure_guide, and file_naming_conventions for proper execution. Analyze input from Agent 4 to determine document type and processing steps. Ensure all necessary information is included and formatted correctly in generated documents.\n\nIf you encounter errors, halt the process and report specific issues to Agent 4. Use the data_verification_interface for human confirmation when needed. Prioritize data accuracy and document integrity throughout the process.\n\nYour output should be prepared Word documents for Agent 2 and a detailed status report for Agent 4, including any exceptions or issues encountered. Adapt your approach based on the complexity of each task, focusing on efficiency and precision in document preparation.",
+        "trigger": "This agent is triggered when new data is added to the Excel file or when existing data is updated, indicating a new case or a case reaching its renewal date.",
+        "decisions": [
+            {
+                "description": "Document Type Selection",
+                "criteria": "Analyze input data from Agent 4 for indicators of document type (e.g., new case vs. renewal, sealed vs. non-sealed documents) to determine which template to use and which specific processing steps to follow, including whether PDF merging is required for sealed documents"
+            },
+            {
+                "description": "Exception Handling",
+                "criteria": "Evaluate the success or failure of each processing step. If any critical step fails (e.g., data extraction error, VBA execution failure, Word document generation issue), halt the process and report the specific exception to Agent 4"
+            }
+        ]
+    },
+    {
+        "id": "2",
+        "name": "Content Analysis and Error Detection Agent",
+        "description": "This agent focuses on document comparison and error detection, primarily working with Word documents.",
+        "reasoning": "This agent is essential for maintaining document accuracy and quality throughout the process.",
+        "tasks": [
+            {
+                "description": "Word Document Comparison and Error Detection",
+                "reasoning": "Identifies discrepancies and errors in generated documents",
+                "complexity": "4"
+            },
+            {
+                "description": "Quality Assurance Check in Word",
+                "reasoning": "Ensures documents meet quality standards",
+                "complexity": "4"
+            }
+        ],
+        "agent_type": "ReAct",
+        "context": [
+            {
+                "description": "Ideal template versions of each document type for guardianship renewal",
+                "reasoning": "Required for comparison with generated documents to detect errors and inconsistencies",
+                "location": "",
+                "variable_name": "template_documents"
+            },
+            {
+                "description": "Comprehensive information on guardianship renewal requirements",
+                "reasoning": "Needed to ensure generated documents meet all legal and procedural requirements",
+                "location": "",
+                "variable_name": "guardianship_renewal_requirements"
+            }
+        ],
+        "inputs": [
+            {
+                "source": "Agent 1",
+                "content": "Prepared Word documents"
+            }
+        ],
+        "outputs": [
+            {
+                "recipient": "Agent 3",
+                "content": "Analysis results and detected errors"
+            },
+            {
+                "recipient": "Agent 4",
+                "content": "Quality assurance report"
+            }
+        ],
+        "tools": [
+            {
+                "name": "Word Document Processing and Comparison Tool",
+                "description": "An GPT integrated tool for reading, parsing, and comparing Word documents. The primary tools you create must Use GPT to compare a word document to an example template word file, identify any errors based on data in the excel merge spreadsheet and then fix any errors in the original word document. It extracts content and structure, compares multiple documents, highlights differences, detects errors, and supports quality assurance checks against predefined standards.",
+                "variable_name": "word_doc_analyzer"
+            }
+        ],
+        "system": "You are an expert Content Analysis and Error Detection Agent specializing in Word document comparison and quality assurance for guardianship renewal documents. Your mission is to ensure all documents meet legal and procedural requirements with utmost accuracy.\n\nTasks:\n1. Compare generated Word documents against ideal templates using word_doc_analyzer.\n2. Identify discrepancies, errors, and inconsistencies.\n3. Conduct thorough quality assurance checks.\n\nUtilize template_documents and guardianship_renewal_requirements as your primary references. Approach each analysis methodically:\n\n1. Examine content, structure, and formatting meticulously.\n2. Compare against templates, highlighting all differences.\n3. Verify compliance with guardianship renewal requirements.\n4. Evaluate overall document quality and consistency.\n\nYour output must be comprehensive yet concise:\n1. List all errors and discrepancies with exact document locations.\n2. Provide specific, actionable correction suggestions.\n3. Assign a quality assessment score (1-10) for each document.\n4. Prioritize issues based on their potential legal or procedural impact.\n\nPresent findings in a clear, professional format. Your analysis is critical for maintaining the integrity of guardianship renewal processes. Exercise extreme attention to detail and maintain the highest standards of accuracy in your work. Be prepared to justify your findings if questioned, citing relevant requirements or best practices.",
+        "trigger": "This agent is activated when the Document Processing and Preparation Agent completes the initial document generation and formatting tasks, passing the prepared Word documents for analysis.",
+        "decisions": []
+    },
+    {
+        "id": "3",
+        "name": "Content Generation and Review Agent",
+        "description": "This agent handles the generation of specific content in Word and manages the human review process.",
+        "reasoning": "This agent is crucial for generating specialized content and managing human review, ensuring the accuracy and completeness of complex documents.",
+        "tasks": [
+            {
+                "description": "Content Generation for Specific Word Documents",
+                "reasoning": "Creates specialized content for certain document types",
+                "complexity": "5"
+            },
+            {
+                "description": "Human Review and Approval for Generated Content",
+                "reasoning": "Ensures accuracy and appropriateness of generated content",
+                "complexity": "3"
+            }
+        ],
+        "agent_type": "ReAct",
+        "context": [
+            {
+                "description": "Comprehensive information on guardianship renewal requirements",
+                "reasoning": "Needed to generate accurate and compliant content for specific documents",
+                "location": "",
+                "variable_name": "guardianship_renewal_requirements"
+            },
+            {
+                "description": "Guidelines for structuring and populating the Declaration of Attorney Fees",
+                "reasoning": "Required to generate accurate content for fee declarations",
+                "location": "",
+                "variable_name": "attorney_fee_guidelines"
+            },
+            {
+                "description": "Guidelines on handling sealed financial and medical documents",
+                "reasoning": "Needed to generate appropriate content and instructions for these sensitive documents",
+                "location": "",
+                "variable_name": "financial_medical_guidelines"
+            }
+        ],
+        "inputs": [
+            {
+                "source": "Agent 2",
+                "content": "Analysis results and detected errors"
+            }
+        ],
+        "outputs": [
+            {
+                "recipient": "Agent 4",
+                "content": "Generated content and human review results"
+            }
+        ],
+        "tools": [
+            {
+                "name": "Word Document Interaction Tool",
+                "description": "A tool that enables creation, modification, and export of Microsoft Word documents for content generation and review purposes.",
+                "variable_name": "word_document_handler"
+            }
+        ],
+        "system": "You are a highly skilled Content Generation and Review Specialist, expert in creating specialized legal documents and managing human review processes. Your focus is on generating accurate, compliant content for specific Word documents, particularly guardianship renewals, attorney fee declarations, and sensitive financial/medical documents.\n\nTasks:\n1. Analyze Agent 2's input to determine document-specific content requirements.\n2. Use the Word Document Interaction Tool (word_document_handler) to create and modify content.\n3. Generate specialized content based on guardianship_renewal_requirements, attorney_fee_guidelines, and financial_medical_guidelines.\n4. Initiate and manage human review processes, ensuring accuracy and appropriateness.\n5. Incorporate reviewer feedback and revise content accordingly.\n\nContent Generation Guidelines:\n- Ensure accuracy, compliance, and up-to-date information.\n- Use clear, concise legal language.\n- Follow established templates and logical structure.\n- Include appropriate confidentiality notices for sensitive documents.\n\nHuman Review Management:\n- Clearly communicate review requirements and deadlines.\n- Provide a structured feedback format.\n- Promptly address and incorporate all feedback.\n\nOutput completed Word documents and review results to Agent 4. Maintain a professional, objective tone in all communications and content. Prioritize document complexity, legal requirements, and potential risks when deciding on human review necessity.",
+        "trigger": "This agent is triggered in two scenarios: 1. When the Content Analysis and Error Detection Agent identifies the need for additional content generation in specific documents. 2. When the Document Processing and Preparation Agent completes initial document generation for documents requiring specialized content (e.g., Declaration of Guardian).",
+        "decisions": [
+            {
+                "description": "Determine the specific content to generate",
+                "criteria": "Document type and analysis results from Agent 2"
+            },
+            {
+                "description": "Decide when to initiate human review process",
+                "criteria": "Document complexity, legal requirements, or potential risks"
+            }
+        ]
+    },
+    {
+        "id": "4",
+        "name": "Workflow and Exception Management Agent",
+        "description": "This agent oversees the entire process, manages exceptions, coordinates human interactions, and ensures proper use of Excel, Word, and VBA throughout the workflow.",
+        "reasoning": "This agent is essential for managing the overall workflow, handling exceptions, and ensuring all processes are completed correctly and efficiently.",
+        "tasks": [
+            {
+                "description": "Process Initiation and Excel Data Input Collection",
+                "reasoning": "Starts the workflow and gathers necessary data",
+                "complexity": "2"
+            },
+            {
+                "description": "Workflow Coordination across Excel and Word",
+                "reasoning": "Ensures smooth integration between different applications",
+                "complexity": "3"
+            },
+            {
+                "description": "Exception Handling and Human Review Flagging",
+                "reasoning": "Manages complex cases and routes for human intervention when needed",
+                "complexity": "5"
+            },
+            {
+                "description": "Court Procedure Verification and Document Adjustment",
+                "reasoning": "Adapts documents to specific court requirements",
+                "complexity": "4"
+            },
+            {
+                "description": "Final Word Document Package Assembly",
+                "reasoning": "Compiles all necessary documents for submission",
+                "complexity": "3"
+            },
+            {
+                "description": "File Organization and Management (Excel, Word, and PDF)",
+                "reasoning": "Maintains orderly file structure throughout the process",
+                "complexity": "2"
+            },
+            {
+                "description": "VBA Script Management and Execution",
+                "reasoning": "Oversees the use of VBA scripts for automation",
+                "complexity": "2"
+            }
+        ],
+        "agent_type": "ReAct",
+        "context": [
+            {
+                "description": "Documentation outlining procedures and requirements for different courts",
+                "reasoning": "Needed to adapt documents and processes based on specific court procedures",
+                "location": "",
+                "variable_name": "court_specific_guidelines"
+            },
+            {
+                "description": "Comprehensive information on guardianship renewal requirements",
+                "reasoning": "Required to oversee the entire process and ensure all requirements are met",
+                "location": "",
+                "variable_name": "guardianship_renewal_requirements"
+            },
+            {
+                "description": "Guidelines for consistent file naming and organization",
+                "reasoning": "Needed to manage overall file organization and ensure consistency across the process",
+                "location": "",
+                "variable_name": "file_naming_conventions"
+            }
+        ],
+        "inputs": [
+            {
+                "source": "User",
+                "content": "Process initiation and initial data"
+            },
+            {
+                "source": "Agent 1",
+                "content": "Document processing status and any exceptions"
+            },
+            {
+                "source": "Agent 2",
+                "content": "Quality assurance report"
+            },
+            {
+                "source": "Agent 3",
+                "content": "Generated content and human review results"
+            }
+        ],
+        "outputs": [
+            {
+                "recipient": "Agent 1",
+                "content": "Initial data and document requirements"
+            },
+            {
+                "recipient": "User",
+                "content": "Final document package and process completion status"
+            }
+        ],
+        "tools": [
+            {
+                "name": "Microsoft Office Integration Tool",
+                "description": "Provides capabilities to read from, write to, and manipulate Excel spreadsheets; create, edit, and compile Word documents; and execute VBA scripts in both Excel and Word.",
+                "variable_name": "ms_office_integration_tool"
+            },
+            {
+                "name": "File System Management Tool",
+                "description": "Enables creating folders, moving files, and maintaining an orderly file structure across various file types (Excel, Word, PDF).",
+                "variable_name": "file_system_manager"
+            },
+            {
+                "name": "Human Review Interface",
+                "description": "A simple interface to flag issues for human review and receive approval or input.",
+                "variable_name": "human_review_interface"
+            },
+            {
+                "name": "Court Procedure Database",
+                "description": "A database or API that the agent can query for specific court requirements and procedures.",
+                "variable_name": "court_procedure_db"
+            }
+        ],
+        "system": "You are the Workflow and Exception Management Agent, a sophisticated AI system overseeing the guardianship renewal process. Your role is to manage the entire workflow, from initiation to final document submission, while integrating Microsoft Office applications and handling exceptions.\n\nYour tasks include:\n1. Initiating the process and collecting Excel data inputs\n2. Coordinating workflow across Excel and Word\n3. Handling exceptions and flagging cases for human review\n4. Verifying court procedures and adjusting documents accordingly\n5. Assembling the final Word document package\n6. Managing file organization across Excel, Word, and PDF formats\n7. Overseeing VBA script execution for automation\n\nUtilize the Microsoft Office Integration Tool, File System Management Tool, Human Review Interface, and Court Procedure Database efficiently. Refer to court_specific_guidelines, guardianship_renewal_requirements, and file_naming_conventions for accurate processing.\n\nWhen interacting with humans, maintain a professional tone. Present information concisely, highlighting issues requiring attention. For exceptions, provide brief explanations and suggest solutions.\n\nYour success depends on accurate document preparation, meeting court-specific requirements, and ensuring smooth process flow with minimal human intervention. Continuously monitor the process, anticipate issues, and address them proactively.\n\nProvide status updates, exception reports, and the final document package ready for submission. Adapt your approach based on the complexity of each case and specific court requirements.",
+        "trigger": "This agent is active throughout the entire process, initially triggered by the same event as the Document Processing and Preparation Agent (new/updated Excel data). It then continues to operate based on the outputs and status updates from all other agents.",
+        "decisions": [
+            {
+                "description": "The agent needs to decide when to flag cases for human review and intervention.",
+                "criteria": "Complexity of the case, presence of unusual or non-standard data, failure of automated processes, discrepancies in document content or format, specific court requirements that cannot be automatically addressed"
+            },
+            {
+                "description": "The agent must decide how to route tasks and information between different agents and tools.",
+                "criteria": "Current stage of the process, completion status of previous tasks, availability of required inputs, specific requirements of each court procedure, results of quality assurance checks"
+            },
+            {
+                "description": "The agent needs to decide when and how to adapt documents to specific court requirements.",
+                "criteria": "Court-specific procedures and requirements (from Court Procedure Database), document type and content, results of court procedure verification"
+            },
+            {
+                "description": "The agent needs to decide when the process is complete and the final document package is ready for submission.",
+                "criteria": "Completion status of all required tasks, results of quality assurance checks, presence of all necessary documents, adherence to court-specific requirements, human approval (if required)"
+            }
+        ]
+    }
+]

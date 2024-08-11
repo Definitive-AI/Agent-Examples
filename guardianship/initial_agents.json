@@ -1,0 +1,163 @@
+[
+    {
+        "id": "1",
+        "name": "Document Processing and Preparation Agent",
+        "description": "This agent handles initial document generation, formatting, and preparation, leveraging Excel, VBA, and Word.",
+        "tasks": [
+            {"description":"Data Extraction from Excel",
+            "reasoning": "Necessary to gather required information for document generation",
+            "complexity":"2"},
+            {"description":"VBA-Assisted Data Merging",
+            "reasoning": "Efficiently combines data from multiple sources",
+            "complexity":"3"},
+            {"description":"Initial Word Document Generation",
+            "reasoning": "Creates the base documents for further processing",
+            "complexity":"3"},
+            {"description":"Data Verification Prompt",
+            "reasoning": "Ensures data accuracy and completeness",
+            "complexity":"2"},
+            {"description":"Automated Formatting in Word",
+            "reasoning": "Applies consistent formatting across documents",
+            "complexity":"3"},
+            {"description":"Document-Specific Processing (e.g., PDF merging for sealed documents)",
+            "reasoning": "Handles special requirements for certain document types",
+            "complexity":"4"}
+        ],
+        "documentation":[
+            {
+                "description":"Ideal template versions of each document type for guardianship renewal",
+                "reasoning": "Needed to generate initial documents correctly and ensure proper formatting",
+                "location":"",
+                "variable_name":"template_documents"
+            },
+            {
+                "description":"Guide explaining the structure of the Excel spreadsheet used for data input",
+                "reasoning": "Required to correctly extract and interpret data from the Excel file",
+                "location":"",
+                "variable_name":"excel_data_structure_guide"
+            },
+            {
+                "description":"Guidelines for consistent file naming and organization",
+                "reasoning": "Needed to ensure proper file management and organization throughout the process",
+                "location":"",
+                "variable_name":"file_naming_conventions"
+            }
+        ],
+        "trigger": "This agent is triggered when new data is added to the Excel file or when existing data is updated, indicating a new case or a case reaching its renewal date.",
+        "reasoning": "This agent is crucial for initiating the document preparation process and handling the initial data processing and document generation tasks."
+    },
+    {
+        "id": "2",
+        "name": "Content Analysis and Error Detection Agent",
+        "description": "This agent focuses on document comparison and error detection, primarily working with Word documents.",
+        "tasks": [
+            {"description":"Word Document Comparison and Error Detection",
+            "reasoning": "Identifies discrepancies and errors in generated documents",
+            "complexity":"4"},
+            {"description":"Quality Assurance Check in Word",
+            "reasoning": "Ensures documents meet quality standards",
+            "complexity":"4"}
+        ],
+        "documentation":[
+            {
+                "description":"Ideal template versions of each document type for guardianship renewal",
+                "reasoning":"Required for comparison with generated documents to detect errors and inconsistencies",
+                "location":"",
+                "variable_name":"template_documents"
+            },
+            {
+                "description":"Comprehensive information on guardianship renewal requirements",
+                "reasoning": "Needed to ensure generated documents meet all legal and procedural requirements",
+                "location":"",
+                "variable_name":"guardianship_renewal_requirements"
+            }
+        ],
+        "trigger": "This agent is activated when the Document Processing and Preparation Agent completes the initial document generation and formatting tasks, passing the prepared Word documents for analysis.",
+        "reasoning": "This agent is essential for maintaining document accuracy and quality throughout the process."
+    },
+    {
+        "id": "3",
+        "name": "Content Generation and Review Agent",
+        "description": "This agent handles the generation of specific content in Word and manages the human review process.",
+        "tasks": [
+            {"description":"Content Generation for Specific Word Documents",
+            "reasoning": "Creates specialized content for certain document types",
+            "complexity":"5"},
+            {"description":"Human Review and Approval for Generated Content",
+            "reasoning": "Ensures accuracy and appropriateness of generated content",
+            "complexity":"3"}
+        ],
+        "documentation":[
+            {
+                "description":"Comprehensive information on guardianship renewal requirements",
+                "reasoning":"Needed to generate accurate and compliant content for specific documents",
+                "location":"",
+                "variable_name":"guardianship_renewal_requirements"
+            },
+            {
+                "description":"Guidelines for structuring and populating the Declaration of Attorney Fees",
+                "reasoning": "Required to generate accurate content for fee declarations",
+                "location":"",
+                "variable_name":"attorney_fee_guidelines"
+            },
+            {
+                "description":"Guidelines on handling sealed financial and medical documents",
+                "reasoning": "Needed to generate appropriate content and instructions for these sensitive documents",
+                "location":"",
+                "variable_name":"financial_medical_guidelines"
+            }
+        ],
+        "trigger": "This agent is triggered in two scenarios: 1. When the Content Analysis and Error Detection Agent identifies the need for additional content generation in specific documents. 2. When the Document Processing and Preparation Agent completes initial document generation for documents requiring specialized content (e.g., Declaration of Guardian).",
+        "reasoning": "This agent is crucial for generating specialized content and managing human review, ensuring the accuracy and completeness of complex documents."
+    },
+    {
+        "id": "4",
+        "name": "Workflow and Exception Management Agent",
+        "description": "This agent oversees the entire process, manages exceptions, coordinates human interactions, and ensures proper use of Excel, Word, and VBA throughout the workflow.",
+        "tasks": [
+            {"description":"Process Initiation and Excel Data Input Collection",
+            "reasoning": "Starts the workflow and gathers necessary data",
+            "complexity":"2"},
+            {"description":"Workflow Coordination across Excel and Word",
+            "reasoning": "Ensures smooth integration between different applications",
+            "complexity":"3"},
+            {"description":"Exception Handling and Human Review Flagging",
+            "reasoning": "Manages complex cases and routes for human intervention when needed",
+            "complexity":"5"},
+            {"description":"Court Procedure Verification and Document Adjustment",
+            "reasoning": "Adapts documents to specific court requirements",
+            "complexity":"4"},
+            {"description":"Final Word Document Package Assembly",
+            "reasoning": "Compiles all necessary documents for submission",
+            "complexity":"3"},
+            {"description":"File Organization and Management (Excel, Word, and PDF)",
+            "reasoning": "Maintains orderly file structure throughout the process",
+            "complexity":"2"},
+            {"description":"VBA Script Management and Execution",
+            "reasoning": "Oversees the use of VBA scripts for automation",
+            "complexity":"2"}
+        ],
+        "documentation":[
+            {
+                "description":"Documentation outlining procedures and requirements for different courts",
+                "reasoning":"Needed to adapt documents and processes based on specific court procedures",
+                "location":"",
+                "variable_name":"court_specific_guidelines"
+            },
+            {
+                "description":"Comprehensive information on guardianship renewal requirements",
+                "reasoning": "Required to oversee the entire process and ensure all requirements are met",
+                "location":"",
+                "variable_name":"guardianship_renewal_requirements"
+            },
+            {
+                "description":"Guidelines for consistent file naming and organization",
+                "reasoning": "Needed to manage overall file organization and ensure consistency across the process",
+                "location":"",
+                "variable_name":"file_naming_conventions"
+            }
+        ],
+        "trigger": "This agent is active throughout the entire process, initially triggered by the same event as the Document Processing and Preparation Agent (new/updated Excel data). It then continues to operate based on the outputs and status updates from all other agents.",
+        "reasoning": "This agent is essential for managing the overall workflow, handling exceptions, and ensuring all processes are completed correctly and efficiently."
+    }
+]
