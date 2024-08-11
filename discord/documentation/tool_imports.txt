@@ -1,0 +1,100 @@
+[
+    {
+        "name": "category_priority_tagger",
+        "description": "Attach metadata tags to processed questions, marking their assigned category and priority level for downstream handling. This tool analyzes the input question and context to determine the most appropriate category (e.g., geography, history, science) and priority level (high, medium, low) based on predefined keywords and patterns."
+    },
+    {
+        "name": "discord_responder",
+        "description": "Responds to questions on Discord by processing the input and sending a response to the specified channel."
+    },
+    {
+        "name": "server_info_policy_query",
+        "description": "Query the unified database for server information and policy guidelines, enabling accurate response generation and policy compliance checking."
+    },
+    {
+        "name": "unified_information_retrieval",
+        "description": "Unified Information Retrieval Tool: Combines internal documentation search and approved external web search capabilities, with features for source prioritization, result filtering and ranking, and access control. It provides a comprehensive search across multiple sources, ensuring relevant and up-to-date information retrieval."
+    },
+    {
+        "name": "data_analysis_documentation",
+        "description": "Analyze historical data to identify question patterns, generate insights, and produce documentation based on analysis results."
+    },
+    {
+        "name": "update_faq",
+        "description": "Update FAQ based on data analysis results."
+    },
+    {
+        "name": "question_answering",
+        "description": "Answer questions about the dataset."
+    }
+][
+    {
+        "name": "category_priority_tagger",
+        "description": "Attach metadata tags to processed questions, marking their assigned category and priority level for downstream handling. This tool analyzes the input question and context to determine the most appropriate category from predefined options and assigns a priority level based on contextual cues."
+    },
+    {
+        "name": "discord_responder",
+        "description": "Responds to questions on Discord by processing the input and generating an appropriate answer. This tool can handle various types of questions and provide informative responses."
+    },
+    {
+        "name": "unified_database_query",
+        "description": "Query the unified database for server information and policy guidelines. This tool allows the agent to retrieve data about server configurations, system policies, and security guidelines from a single source, enabling accurate response generation and policy compliance checking."
+    },
+    {
+        "name": "unified_info_retrieval",
+        "description": "Unified Information Retrieval Tool: Combines internal documentation search and approved external web search capabilities, with features for source prioritization, result filtering and ranking, and access control. It provides relevant and accessible information based on the user's query and permissions, ensuring secure and efficient information retrieval."
+    },
+    {
+        "name": "data_analysis_documentation",
+        "description": "Analyzes historical data to identify question patterns, generates insights, and updates documentation based on analysis results. It can perform pattern identification, trend analysis, and topic frequency analysis."
+    }
+][
+    {
+        "name": "discord_api_tool",
+        "description": "Discord API Integration Tool: Enables real-time monitoring of Discord channels and retrieval of messages for analysis by the AI agent. It can monitor channels in real-time and retrieve past messages from specified channels."
+    },
+    {
+        "name": "knowledge_base_query",
+        "description": "Query the internal knowledge base to retrieve relevant information based on the provided query. Supports complex queries and returns formatted results with similarity scores."
+    },
+    {
+        "name": "exa_search",
+        "description": "Perform a semantic web search using Exa Search API and return relevant results from trusted websites. This tool filters results based on credibility and extracts key information from top-ranked pages."
+    },
+    {
+        "name": "exa_content_retrieval",
+        "description": "Retrieve and clean the content of a webpage from trusted sources using Exa's content retrieval feature. This tool fetches and processes web documents for further analysis, ensuring information credibility."
+    },
+    {
+        "name": "discord_api",
+        "description": "Interact with the Discord API, including sending messages, editing/deleting messages, adding reactions, and managing a conditional approval process for sensitive or complex responses."
+    },
+    {
+        "name": "kbms_api",
+        "description": "Interact with the Knowledge Base Management System (KBMS) API. This comprehensive tool enables creating, reading, updating, and deleting entries in the knowledge base, FAQs, and ticketing system. It also supports tagging items for review, providing full management capabilities for the KBMS."
+    },
+    {
+        "name": "schedule_review",
+        "description": "Schedule a human reviewer for periodic quality control of the knowledge base, setting up notifications for the specified review time and frequency."
+    },
+    {
+        "name": "cancel_review",
+        "description": "Cancel a scheduled review task for a human reviewer."
+    },
+    {
+        "name": "list_reviews",
+        "description": "List all scheduled review tasks for human reviewers."
+    },
+    {
+        "name": "data_analytics_and_reporting",
+        "description": "Accesses, analyzes, and visualizes data from various sources to generate insights, track metrics, and identify trends. This tool can perform summary statistics, correlation analysis, and time series analysis on CSV or JSON data, and create bar, line, or scatter plot visualizations."
+    },
+    {
+        "name": "user_feedback",
+        "description": "Gathers, processes, and analyzes user feedback to measure service quality and identify areas for improvement."
+    },
+    {
+        "name": "community_engagement",
+        "description": "Monitors and facilitates community discussions, supports member engagement, and tracks community contributions."
+    }
+]

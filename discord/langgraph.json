@@ -1,0 +1,9 @@
+{
+        "dependencies": ["."],
+        "graphs": {
+            "agent": "./agent.py:The variable name of the compiled graph is:
+
+graph"
+        },
+        "env": ".env"
+        }

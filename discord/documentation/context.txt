@@ -1,0 +1,2226 @@
+Tool 
+
+from langchain_community.document_loaders import WebBaseLoader
+from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain.vectorstores import Chroma
+from langchain.tools import create_retriever_tool
+import uuid
+
+urls = [
+    "https://github.com/umm-maybe/fediautomod",
+    "https://protegoapi.com/",
+    "https://www.getcove.com/",
+    "https://policybot.eu/"
+]
+
+def load_policy_violation_docs(chroma, embeddings):
+    if not collection_exists(chroma, "policy_violation_monitor"):
+        loader = WebBaseLoader(urls)
+        data = loader.load()
+
+        documents = RecursiveCharacterTextSplitter(
+            chunk_size=1000, chunk_overlap=200
+        ).split_documents(data)
+
+        collection = chroma.create_collection("policy_violation_monitor")
+        for doc in documents:
+            emb = embeddings.embed_documents([doc.page_content])
+            collection.add(
+                ids=[str(uuid.uuid1())], embeddings=emb, metadatas=doc.metadata, documents=doc.page_content
+            )
+
+load_policy_violation_docs(chroma, embeddings)
+
+policy_violation_retriever = Chroma(
+    client=chroma,
+    collection_name="policy_violation_monitor",
+    embedding_function=embeddings,
+).as_retriever()
+
+policy_violation_tool = create_retriever_tool(
+    policy_violation_retriever,
+    "policy_violation_monitor",
+    "Search for information about monitoring incoming questions for potential policy violations. Use this tool for any questions related to maintaining server integrity and safety by identifying potential policy violations in messages."
+)
+Tool 
+
+from langchain_community.document_loaders import TextLoader
+from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain.tools.retriever import create_retriever_tool
+from langchain.vectorstores.chroma import Chroma
+import chromadb
+import uuid
+
+chroma = chromadb.PersistentClient(path="./chroma_db")
+
+def load_question_categorizer(chroma, embeddings):
+    text = "Categorizes and prioritizes incoming questions. To efficiently manage and process incoming questions: To accurately categorize questions based on server topics."
+    
+    if "question_categorizer" not in [col.name for col in chroma.list_collections()]:
+        loader = TextLoader(text)
+        documents = loader.load()
+
+        text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
+        split_docs = text_splitter.split_documents(documents)
+
+        collection = chroma.create_collection("question_categorizer")
+        for doc in split_docs:
+            collection.add(
+                ids=[str(uuid.uuid4())],
+                embeddings=embeddings.embed_documents([doc.page_content]),
+                metadatas=[doc.metadata],
+                documents=[doc.page_content]
+            )
+
+load_question_categorizer(chroma, embeddings)
+
+question_categorizer_tool = create_retriever_tool(
+    Chroma(client=chroma, collection_name="question_categorizer", embedding_function=embeddings).as_retriever(),
+    "question_categorizer",
+    "Use this tool to categorize and prioritize incoming questions based on server topics. It helps efficiently manage and process questions by accurately categorizing them."
+)
+Tool 
+
+from langchain_community.document_loaders import WebBaseLoader
+from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain.vectorstores import Chroma
+from langchain.embeddings import HuggingFaceEmbeddings
+from langchain.tools.retriever import create_retriever_tool
+import chromadb
+import uuid
+
+urls = [
+    "https://www.practicalai.io/categorizing-machine-learning-problems/",
+    "https://machinelearningmastery.com/types-of-classification-in-machine-learning/",
+    "https://towardsdatascience.com/how-to-use-ai-to-detect-open-ended-questions-for-non-datascientists-e2ef02427422",
+    "https://towardsdatascience.com/https-medium-com-noa-weiss-the-hitchhikers-guide-to-hierarchical-classification-f8428ea1e076",
+    "https://medium.com/sifium/machine-learning-types-of-classification-9497bd4f2e14",
+    "https://www.topbots.com/structure-intent-in-chatbots/",
+    "https://dev.to/jeremycmorgan/the-essential-guide-to-prompt-engineering-for-creators-and-innovators-28pk",
+    "https://www.jisc.ac.uk/guides/developing-high-quality-question-and-answer-sets-for-chatbots",
+    "https://www.thepromptengineer.org/master-the-art-of-prompt-engineering-unlock-the-full-potential-of-your-ai-assistant/",
+    "https://towardsdatascience.com/3-advanced-document-retrieval-techniques-to-improve-rag-systems-0703a2375e1c",
+    "https://towardsdatascience.com/suggestions-on-how-to-structure-intents-in-chatbots-and-gather-useful-feedbacks-f72f7e552090",
+    "https://www.dataversity.net/how-to-easily-tap-historical-data-for-business-growth/",
+    "https://becominghuman.ai/ai-fail-to-popularize-and-scale-chatbots-we-need-better-data-88ed005724f6",
+    "https://www.linkedin.com/advice/0/how-do-you-select-data-sources-ai-skills-artificial-intelligence",
+    "https://towardsdatascience.com/extracting-information-from-historical-genealogical-documents-ab3068b10715",
+    "https://towardsdatascience.com/5-simple-questions-to-find-data-for-a-machine-learning-project-d92f0d54c16f",
+    "https://towardsdatascience.com/how-to-get-the-right-data-why-not-ask-for-it-d26ced1bbd46",
+    "https://www.kdnuggets.com/2021/03/right-questions-answered-using-data.html"
+]
+
+def load_documentation(chroma_client, embeddings):
+    if not collection_exists(chroma_client, "langchain_tools"):
+        loader = WebBaseLoader(urls)
+        data = loader.load()
+
+        documents = RecursiveCharacterTextSplitter(
+            chunk_size=1000, chunk_overlap=200
+        ).split_documents(data)
+
+        collection = chroma_client.create_collection("langchain_tools")
+        for doc in documents:
+            emb = embeddings.embed_documents([doc.page_content])
+            collection.add(
+                ids=[str(uuid.uuid1())], embeddings=emb, metadatas=[doc.metadata], documents=[doc.page_content]
+            )
+
+def collection_exists(client, collection_name):
+    collections = client.list_collections()
+    return collection_name in [c.name for c in collections]
+
+embeddings = HuggingFaceEmbeddings()
+chroma_client = chromadb.PersistentClient(path="./chroma_db")
+
+load_documentation(chroma_client, embeddings)
+
+chroma_retriever = Chroma(
+    client=chroma_client,
+    collection_name="langchain_tools",
+    embedding_function=embeddings,
+).as_retriever()
+
+question_categorization_tool = create_retriever_tool(
+    chroma_retriever,
+    "question_categorization_search",
+    "Search for information about categorizing and prioritizing questions, machine learning classification, chatbot intent structuring, and historical data usage. Use this tool for questions related to these topics!"
+)
+Tool 
+
+from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain.vectorstores import Chroma
+from langchain.tools.retriever import create_retriever_tool
+from langchain.schema import Document
+import uuid
+
+# The text content to be loaded
+text_content = """Generates initial responses to categorized questions 
+To provide quick and accurate initial responses: To generate accurate responses based on server information"""
+
+# Create a document
+document = Document(page_content=text_content, metadata={})
+
+# Split the document
+text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
+split_docs = text_splitter.split_documents([document])
+
+# Load the documents into the database
+def load_documentation(chroma, embeddings):
+    if not collection_exists(chroma, "initial_response_generator"):
+        collection = chroma.create_collection("initial_response_generator")
+        for doc in split_docs:
+            emb = embeddings.embed_documents([doc.page_content])
+            collection.add(
+                ids=[str(uuid.uuid1())], embeddings=emb, metadatas=doc.metadata, documents=[doc.page_content]
+            )
+
+load_documentation(chroma, embeddings)
+
+# Create the retriever
+chroma_retriever = Chroma(
+    client=chroma,
+    collection_name="initial_response_generator",
+    embedding_function=embeddings,
+).as_retriever()
+
+# Create the retriever tool
+initial_response_generator_tool = create_retriever_tool(
+    chroma_retriever,
+    "initial_response_generator_search",
+    "Search for information about generating initial responses to categorized questions. Use this tool for questions about quick and accurate response generation based on server information."
+)
+Tool 
+
+from langchain_community.document_loaders import WebBaseLoader
+from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain.vectorstores import Chroma
+from langchain.tools.retriever import create_retriever_tool
+import uuid
+
+urls = [
+    "https://learn.microsoft.com/en-us/azure/cognitive-services/qnamaker/concepts/best-practices",
+    "https://www.jisc.ac.uk/guides/developing-chatbots-and-intelligent-assistants/developing-high-quality-qa-sets",
+    "https://www.ibm.com/docs/en/watson-knowledge-studio/1.2.0?topic=entities-best-practices",
+    "https://ai.google.com/research/NaturalQuestions",
+    "https://www.kdnuggets.com/2022/09/question-answering-nlp.html",
+    "https://www.databricks.com/blog/2023/08/17/best-practices-evaluating-llms",
+    "https://datasciencehorizons.com/prompt-engineering-tips/",
+    "https://www.askviable.com/blog/guide-to-question-formulation/",
+    "https://raganconsulting.com/blog/how-to-write-a-generative-ai-policy/",
+    "https://www.microsoft.com/en-us/ai/responsible-ai",
+    "https://medium.com/@AIethicist/responsible-ai-deployment-framework-a-comprehensive-guide-3f34af1a4ad5",
+    "https://www.bnh.ai/public-materials",
+    "https://medium.com/@AIethicist/ai-governance-policy-best-practices-for-organizations-4f9c3ced116f",
+    "https://clearwatersecurity.com/ai-use-policy/",
+    "https://www.microsoft.com/en-us/ai/responsible-ai-resources",
+    "https://ai.google/responsibility/responsible-ai-practices/"
+]
+
+def load_documentation(chroma, embeddings):
+    if not collection_exists(chroma, "langchain_tools"):
+        loader = WebBaseLoader(urls)
+        data = loader.load()
+
+        documents = RecursiveCharacterTextSplitter(
+            chunk_size=1000, chunk_overlap=200
+        ).split_documents(data)
+
+        collection = chroma.create_collection("langchain_tools")
+        for doc in documents:
+            emb = embeddings.embed_documents([doc.page_content])
+            collection.add(
+                ids=[str(uuid.uuid1())], embeddings=emb, metadatas=doc.metadata, documents=doc.page_content
+            )
+
+load_documentation(chroma, embeddings)
+
+ai_best_practices_retriever_tool = create_retriever_tool(
+    Chroma(client=chroma, collection_name="langchain_tools", embedding_function=embeddings).as_retriever(),
+    "ai_best_practices_search",
+    "Search for information about AI best practices, policies, question-answering techniques, and responsible AI. Use this tool for questions related to AI governance, ethics, and implementation strategies."
+)
+Tool 
+
+import uuid
+from langchain_community.document_loaders import WebBaseLoader
+from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain.vectorstores import Chroma
+from langchain.tools.retriever import create_retriever_tool
+
+def load_documentation(chroma, embeddings, collection_name, urls):
+    if not collection_exists(chroma, collection_name):
+        loader = WebBaseLoader(urls)
+        data = loader.load()
+
+        documents = RecursiveCharacterTextSplitter(
+            chunk_size=1000, chunk_overlap=200
+        ).split_documents(data)
+
+        collection = chroma.create_collection(collection_name)
+        for doc in documents:
+            emb = embeddings.embed_documents([doc.page_content])
+            collection.add(
+                ids=[str(uuid.uuid4())], embeddings=emb, metadatas=doc.metadata, documents=[doc.page_content]
+            )
+
+prompt_engineering_urls = [
+    "https://www.thepromptengineer.org/master-the-art-of-prompt-engineering-unlock-the-full-potential-of-your-ai-assistant/",
+    "https://davefriedman.substack.com/p/mastering-the-chatbot-a-foolproof",
+    "https://medium.com/swlh/9-ultimate-advanced-techniques-to-get-insightful-responses-from-chatgpt-backed-by-new-research-f7b035bb2051",
+    "https://danielmiessler.com/blog/response-shaping-how-to-move-from-ai-prompts-to-ai-whispering/",
+    "https://www.searchenginejournal.com/research-chatgpt-prompts/507535/"
+]
+
+load_documentation(chroma, embeddings, "langchain_tools", prompt_engineering_urls)
+
+prompt_engineering_retriever_tool = create_retriever_tool(
+    Chroma(client=chroma, collection_name="langchain_tools", embedding_function=embeddings).as_retriever(),
+    "prompt_engineering_search",
+    "Search for information about prompt engineering techniques, best practices, and advanced methods for getting insightful responses from AI models. Use this tool for questions related to improving AI interactions and crafting effective prompts."
+)
+Tool 
+
+from langchain_community.document_loaders import WebBaseLoader
+from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain.vectorstores import Chroma
+from langchain.tools.retriever import create_retriever_tool
+import uuid
+
+def load_approved_sources(chroma, embeddings):
+    urls = [
+        "https://www.example.com/approved-source-1",
+        "https://www.example.com/approved-source-2"
+    ]
+    
+    if not collection_exists(chroma, "langchain_tools"):
+        loader = WebBaseLoader(urls)
+        documents = loader.load()
+
+        text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
+        splits = text_splitter.split_documents(documents)
+
+        collection = chroma.create_collection("langchain_tools")
+        for doc in splits:
+            emb = embeddings.embed_documents([doc.page_content])
+            collection.add(
+                ids=[str(uuid.uuid1())],
+                embeddings=emb,
+                metadatas=doc.metadata,
+                documents=[doc.page_content]
+            )
+
+load_approved_sources(chroma, embeddings)
+
+approved_sources_retriever_tool = create_retriever_tool(
+    Chroma(client=chroma, collection_name="langchain_tools", embedding_function=embeddings).as_retriever(),
+    "approved_sources_search",
+    "Search for information from approved external sources. Use this for any questions about external information."
+)
+Tool 
+
+from langchain_community.document_loaders import WebBaseLoader
+from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain.vectorstores import Chroma
+from langchain.tools.retriever import create_retriever_tool
+import uuid
+
+urls = [
+    "https://distill.pub/2017/aia/",
+    "https://towardsdatascience.com/how-to-stay-on-top-of-the-latest-ai-research-e8993523ef3e",
+    "https://towardsdatascience.com/on-ai-and-types-of-reasoning-fc6980295158",
+    "https://dev.to/jeremycmorgan/the-essential-guide-to-prompt-engineering-for-creators-and-innovators-28pk",
+    "https://datasciencehorizons.com/13-prompt-engineering-tips/",
+    "https://towardsdatascience.com/seat-of-knowledge-ai-systems-with-deeply-structure-knowledge-37f1a5ab4bc5",
+    "https://towardsdatascience.com/generative-ai-design-patterns-a-comprehensive-guide-41425a40d7d0",
+    "https://ai.stanford.edu/blog/qagnn/",
+    "https://www.linkedin.com/pulse/knowledge-graph-semantic-enhancement-input-data-improving-amit-sheth/",
+    "https://superagi.com/knowledge-embeddings-in-superagi/",
+    "https://deepai.org/publication/dp-kb-data-programming-with-knowledge-bases-improves-transformer-fine-tuning-for-answer-sentence-selection",
+    "https://blog.quickchat.ai/post/how-to-structure-your-knowledge-base/",
+    "https://towardsdatascience.com/the-building-a-large-scale-accurate-and-fresh-knowledge-graph-71ebd912210e",
+    "https://towardsdatascience.com/from-text-to-knowledge-the-information-extraction-pipeline-b65e7e30273e"
+]
+
+def load_documentation(chroma_client, embeddings):
+    if not collection_exists(chroma_client, "langchain_tools"):
+        loader = WebBaseLoader(urls)
+        data = loader.load()
+
+        documents = RecursiveCharacterTextSplitter(
+            chunk_size=1000, chunk_overlap=200
+        ).split_documents(data)
+
+        collection = chroma_client.create_collection("langchain_tools")
+        for doc in documents:
+            emb = embeddings.embed_documents([doc.page_content])
+            collection.add(
+                ids=[str(uuid.uuid1())], embeddings=emb, metadatas=doc.metadata, documents=doc.page_content
+            )
+
+load_documentation(chroma, embeddings)
+
+chroma_db = Chroma(
+    client=chroma,
+    collection_name="langchain_tools",
+    embedding_function=embeddings,
+)
+
+ai_research_tool = create_retriever_tool(
+    chroma_db.as_retriever(),
+    "ai_research_search",
+    "Search for information about AI research, prompt engineering, and knowledge systems. Use this tool for questions related to latest AI research, reasoning types, prompt engineering tips, and knowledge graph applications."
+)
+Tool 
+
+from langchain_community.document_loaders import WebBaseLoader
+from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain.vectorstores import Chroma
+from langchain.tools.retriever import create_retriever_tool
+import uuid
+
+urls = [
+    "https://theconversation.com/study-shows-ai-generated-fake-reports-fool-experts-160909",
+    "https://www.nature.com/articles/d41586-023-02999-3",
+    "https://towardsdatascience.com/interested-in-ai-policy-start-writing-bc70b08c8c22",
+    "https://carnegieendowment.org/2023/07/10/china-s-ai-regulations-and-how-they-get-made-pub-90117",
+    "https://www.nature.com/articles/s42256-022-00513-4",
+    "https://theconversation.com/how-artificial-intelligence-can-detect-and-create-fake-news-95404"
+]
+
+def load_documentation(chroma, embeddings):
+    if not collection_exists(chroma, "langchain_tools"):
+        loader = WebBaseLoader(urls)
+        data = loader.load()
+
+        documents = RecursiveCharacterTextSplitter(
+            chunk_size=1000, chunk_overlap=200
+        ).split_documents(data)
+
+        collection = chroma.create_collection("langchain_tools")
+        for doc in documents:
+            emb = embeddings.embed_documents([doc.page_content])
+            collection.add(
+                ids=[str(uuid.uuid1())], embeddings=emb, metadatas=doc.metadata, documents=doc.page_content
+            )
+
+load_documentation(chroma, embeddings)
+
+chroma_retriever = Chroma(
+    client=chroma,
+    collection_name="langchain_tools",
+    embedding_function=embeddings,
+).as_retriever()
+
+ai_policy_retriever_tool = create_retriever_tool(
+    chroma_retriever,
+    "ai_policy_search",
+    "Search for information about AI policies, regulations, and their impact. Use this tool for questions related to AI governance, fake news detection, and policy implications."
+)
+Tool 
+
+from langchain_community.document_loaders import WebBaseLoader
+from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain.vectorstores import Chroma
+from langchain.tools.retriever import create_retriever_tool
+import uuid
+
+urls = [
+    "https://towardsdatascience.com/3-advanced-document-retrieval-techniques-to-improve-rag-systems-0703a2375e1c",
+    "https://github.com/quaizarv/QA-Notes",
+    "https://www.kdnuggets.com/2019/01/solve-90-nlp-problems-step-by-step-guide.html",
+    "https://developers.google.com/machine-learning/guides/good-data-analysis",
+    "https://github.com/Kadam-Tushar/Why-Will-My-Question-Be-Closed",
+    "https://www.datasciencecentral.com/building-an-intelligent-qa-system-with-nlp-and-milvus/"
+]
+
+def load_documentation(chroma, embeddings):
+    if not collection_exists(chroma, "langchain_tools"):
+        loader = WebBaseLoader(urls)
+        data = loader.load()
+
+        documents = RecursiveCharacterTextSplitter(
+            chunk_size=1000, chunk_overlap=200
+        ).split_documents(data)
+
+        collection = chroma.create_collection("langchain_tools")
+        for doc in documents:
+            emb = embeddings.embed_documents([doc.page_content])
+            collection.add(
+                ids=[str(uuid.uuid1())], embeddings=emb, metadatas=doc.metadata, documents=doc.page_content
+            )
+
+load_documentation(chroma, embeddings)
+
+qa_improvement_tool = create_retriever_tool(
+    Chroma(client=chroma, collection_name="langchain_tools", embedding_function=embeddings).as_retriever(),
+    "qa_improvement_search",
+    "Search for information about analyzing question patterns and suggesting improvements for the question-answering process and server documentation. Use this tool for insights on improving QA systems, data analysis, and NLP problem-solving."
+)
+Tool 
+
+from langchain_community.document_loaders import WebBaseLoader
+from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain.vectorstores import Chroma
+from langchain_community.embeddings import HuggingFaceEmbeddings
+from langchain.tools.retriever import create_retriever_tool
+import uuid
+
+# List of URLs to load
+urls = [
+    "https://dl.acm.org/doi/10.1145/3397271.3401160",
+    "https://arxiv.org/pdf/1907.06554v1.pdf",
+    "https://dl.acm.org/doi/10.1145/3366423.3380126",
+    "https://journals.sagepub.com/doi/10.1177/1050651920910226",
+    "https://arxiv.org/abs/2210.01959"
+]
+
+def load_documentation(chroma, embeddings):
+    if not collection_exists(chroma, "question_pattern_analysis"):
+        loader = WebBaseLoader(urls)
+        data = loader.load()
+
+        text_splitter = RecursiveCharacterTextSplitter(
+            chunk_size=1000, chunk_overlap=200
+        )
+        documents = text_splitter.split_documents(data)
+
+        collection = chroma.create_collection("question_pattern_analysis")
+        for doc in documents:
+            emb = embeddings.embed_documents([doc.page_content])
+            collection.add(
+                ids=[str(uuid.uuid1())], embeddings=emb, metadatas=doc.metadata, documents=doc.page_content
+            )
+
+# Initialize embeddings
+embeddings = HuggingFaceEmbeddings()
+
+# Initialize Chroma client
+chroma = chromadb.PersistentClient(path="./chroma_db")
+
+# Load documentation
+load_documentation(chroma, embeddings)
+
+# Create retriever
+chroma_retriever = Chroma(
+    client=chroma,
+    collection_name="question_pattern_analysis",
+    embedding_function=embeddings,
+).as_retriever()
+
+# Create retriever tool
+question_pattern_analysis_tool = create_retriever_tool(
+    chroma_retriever,
+    "question_pattern_analysis",
+    "Analyze question patterns and suggest improvements for the question-answering process and server documentation. Use this tool to suggest updates to FAQ and documentation based on common question patterns."
+)
+Tool 
+
+from langchain_community.document_loaders import WebBaseLoader
+from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain.tools.retriever import create_retriever_tool
+from langchain.vectorstores.chroma import Chroma
+import uuid
+
+def load_web_content(urls, chroma, embeddings):
+    if not collection_exists(chroma, "langchain_tools"):
+        loader = WebBaseLoader(urls)
+        documents = loader.load()
+        
+        text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
+        split_docs = text_splitter.split_documents(documents)
+        
+        collection = chroma.create_collection("langchain_tools")
+        for doc in split_docs:
+            emb = embeddings.embed_documents([doc.page_content])
+            collection.add(
+                ids=[str(uuid.uuid1())], 
+                embeddings=emb, 
+                metadatas=doc.metadata, 
+                documents=[doc.page_content]
+            )
+
+web_urls = [
+    "https://discord.com/developers/docs/intro",
+    "https://discord.js.org/",
+    "https://ai.google.com/research/NaturalQuestions/dataset",
+    "https://huggingface.co/datasets/natural_questions",
+    "https://paperswithcode.com/area/natural-language-processing/question-answering",
+    "https://github.com/clulab/nlp-reading-group/wiki/Question-answering-resources"
+]
+
+load_web_content(web_urls, chroma, embeddings)
+
+question_detection_retriever = create_retriever_tool(
+    Chroma(client=chroma, collection_name="langchain_tools", embedding_function=embeddings).as_retriever(),
+    "question_detection_search",
+    "Search for information about question detection and categorization. Use this tool for any questions related to identifying and categorizing questions within a given context!"
+)
+Tool 
+
+from langchain_community.document_loaders import WebBaseLoader
+from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain.vectorstores import Chroma
+from langchain.tools.retriever import create_retriever_tool
+import uuid
+
+urls = [
+    "https://www.datasciencecentral.com/question-answering-tutorial-with-hugging-face-bert/",
+    "https://towardsdatascience.com/natural-language-understanding-core-component-of-conversational-agent-3e51357ca934",
+    "https://thinkinfi.com/complete-guide-for-natural-language-processing-in-python/",
+    "https://rightclick.ai/basic-guide-to-natural-language-processing/",
+    "https://www.analytixlabs.co.in/blog/nlp-interview-questions",
+    "https://blog.questgen.ai/complete-guide-to-generating-multiple-choice-questions-automatically-using-ai-ckxnbk4l1647361ks7wohnp8x4/"
+]
+
+def load_nlp_qa_documentation(chroma, embeddings):
+    if not collection_exists(chroma, "langchain_tools"):
+        loader = WebBaseLoader(urls)
+        data = loader.load()
+
+        documents = RecursiveCharacterTextSplitter(
+            chunk_size=1000, chunk_overlap=200
+        ).split_documents(data)
+
+        collection = chroma.create_collection("langchain_tools")
+        for doc in documents:
+            emb = embeddings.embed_documents([doc.page_content])
+            collection.add(
+                ids=[str(uuid.uuid1())], embeddings=emb, metadatas=doc.metadata, documents=doc.page_content
+            )
+
+load_nlp_qa_documentation(chroma, embeddings)
+
+nlp_qa_retriever_tool = create_retriever_tool(
+    Chroma(client=chroma, collection_name="langchain_tools", embedding_function=embeddings).as_retriever(),
+    "nlp_qa_search",
+    "Search for information about Natural Language Processing, Question Answering, and related topics. Use this tool for questions about NLP techniques, QA systems, and AI-based text processing."
+)
+Tool 
+
+from langchain_community.document_loaders import WebBaseLoader
+from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain.tools.retriever import create_retriever_tool
+from langchain.vectorstores.chroma import Chroma
+import uuid
+
+urls = [
+    "https://www.aclweb.org/anthology/N16-4003.pdf",
+    "https://web.stanford.edu/~jurafsky/slp3/23.pdf",
+    "https://uclnlp.github.io/ai4exams/eqa.html",
+    "https://sisinflab.github.io/interactive-question-answering-systems-survey/",
+    "https://www.slideshare.net/shekarpour/tutorial-on-question-answering-systems",
+    "https://www.microsoft.com/en-us/research/publication/question-answering-with-knowledge-base-web-and-beyond/",
+    "https://github.com/clulab/nlp-reading-group/wiki/Question-answering-resources",
+    "https://thesai.org/Downloads/Volume12No3/Paper_59-Question_Answering_Systems.pdf"
+]
+
+def load_documentation(chroma, embeddings):
+    if not collection_exists(chroma, "langchain_tools"):
+        loader = WebBaseLoader(urls)
+        documents = RecursiveCharacterTextSplitter(
+            chunk_size=1000, chunk_overlap=200
+        ).split_documents(loader.load())
+
+        collection = chroma.create_collection("langchain_tools")
+        for doc in documents:
+            collection.add(
+                ids=[str(uuid.uuid1())],
+                embeddings=embeddings.embed_documents([doc.page_content]),
+                metadatas=doc.metadata,
+                documents=doc.page_content
+            )
+
+load_documentation(chroma, embeddings)
+
+qa_retriever_tool = create_retriever_tool(
+    Chroma(client=chroma, collection_name="langchain_tools", embedding_function=embeddings).as_retriever(),
+    "qa_system_search",
+    "Search for information about question answering systems. Use this tool for queries related to creating or retrieving appropriate responses, utilizing knowledge bases and external resources."
+)
+Tool 
+
+from langchain_community.document_loaders import WebBaseLoader
+from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain.vectorstores import Chroma
+from langchain.embeddings import HuggingFaceEmbeddings
+from langchain.tools.retriever import create_retriever_tool
+import uuid
+import chromadb
+
+urls = [
+    "https://github.com/camdan-me/DiscordBotBestPractices",
+    "https://github.com/andrelucaas/discord-bot-best-practices",
+    "https://discord.com/developers/docs/intro",
+    "https://v13.discordjs.guide/",
+    "https://botblock.org/lists/best-practices",
+    "https://www.toptal.com/chatbot/how-to-make-a-discord-bot"
+]
+
+def collection_exists(client, collection_name):
+    collections = client.list_collections()
+    return collection_name in [c.name for c in collections]
+
+def load_discord_bot_documentation(chroma_client, embeddings):
+    if not collection_exists(chroma_client, "langchain_tools"):
+        loader = WebBaseLoader(urls)
+        data = loader.load()
+
+        documents = RecursiveCharacterTextSplitter(
+            chunk_size=1000, chunk_overlap=200
+        ).split_documents(data)
+
+        collection = chroma_client.create_collection("langchain_tools")
+        for doc in documents:
+            emb = embeddings.embed_documents([doc.page_content])
+            collection.add(
+                ids=[str(uuid.uuid1())], embeddings=emb, metadatas=doc.metadata, documents=[doc.page_content]
+            )
+
+# Initialize embeddings
+embeddings = HuggingFaceEmbeddings()
+
+# Initialize Chroma client
+chroma_client = chromadb.PersistentClient(path="./chroma_db")
+
+# Load documentation
+load_discord_bot_documentation(chroma_client, embeddings)
+
+# Create Chroma instance
+chroma = Chroma(
+    client=chroma_client,
+    collection_name="langchain_tools",
+    embedding_function=embeddings,
+)
+
+# Create retriever tool
+discord_bot_response_tool = create_retriever_tool(
+    chroma.as_retriever(),
+    "discord_bot_response_preparation",
+    "Search for information about Discord bot response preparation, formatting, and posting guidelines. Use this tool for questions related to ensuring quality, consistency, and appropriateness of responses before posting to the Discord server."
+)
+Tool 
+
+import uuid
+from langchain_community.document_loaders import WebBaseLoader
+from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain.vectorstores import Chroma
+from langchain.tools.retriever import create_retriever_tool
+
+urls = [
+    "https://discord.com/guidelines",
+    "https://support.discord.com/hc/en-us/articles/360035969312",
+    "https://support.discord.com/hc/en-us/articles/115001987272",
+    "https://discord.com/moderation",
+    "https://discord.com/community/keeping-your-community-safe",
+    "https://github.com/wc3717/Discord-Server-Best-Practices"
+]
+
+def load_discord_guidelines(chroma, embeddings):
+    if not collection_exists(chroma, "langchain_tools"):
+        try:
+            loader = WebBaseLoader(urls)
+            data = loader.load()
+
+            documents = RecursiveCharacterTextSplitter(
+                chunk_size=1000, chunk_overlap=200
+            ).split_documents(data)
+
+            collection = chroma.create_collection("langchain_tools")
+            for doc in documents:
+                emb = embeddings.embed_documents([doc.page_content])
+                collection.add(
+                    ids=[str(uuid.uuid1())], embeddings=emb, metadatas=doc.metadata, documents=doc.page_content
+                )
+        except Exception as e:
+            print(f"Error loading Discord guidelines: {e}")
+
+load_discord_guidelines(chroma, embeddings)
+
+discord_guidelines_tool = create_retriever_tool(
+    Chroma(client=chroma, collection_name="langchain_tools", embedding_function=embeddings).as_retriever(),
+    "discord_guidelines_search",
+    "Search for Discord guidelines, moderation practices, and community safety information. Use this tool for any questions related to Discord server management and best practices."
+)
+Tool 
+
+from langchain_community.document_loaders import WebBaseLoader
+from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain.vectorstores import Chroma
+from langchain.tools.retriever import create_retriever_tool
+import uuid
+
+def load_knowledge_management_docs(chroma, embeddings):
+    urls = [
+        "https://research.aimultiple.com/knowledge-management/",
+        "https://www.phpkb.com/kb/article/building-a-knowledge-base-with-artificial-intelligence-295.html",
+        "https://www.earley.com/insights/knowledge-managements-rebirth-knowledge-engineering-artificial-intelligence",
+        "https://support.zendesk.com/hc/en-us/articles/4408831743258",
+        "https://www.mojohelpdesk.com/blog/2022/03/ticketing-software-ticketing-system-benefits/",
+        "https://www.zendesk.com/blog/ticketing-system-tips/",
+        "https://support.zendesk.com/hc/en-us/articles/4408828362522"
+    ]
+
+    if not collection_exists(chroma, "langchain_tools"):
+        loader = WebBaseLoader(urls)
+        data = loader.load()
+
+        documents = RecursiveCharacterTextSplitter(
+            chunk_size=1000, chunk_overlap=200
+        ).split_documents(data)
+
+        collection = chroma.create_collection("langchain_tools")
+        for doc in documents:
+            emb = embeddings.embed_documents([doc.page_content])
+            collection.add(
+                ids=[str(uuid.uuid1())], embeddings=emb, metadatas=doc.metadata, documents=doc.page_content
+            )
+
+load_knowledge_management_docs(chroma, embeddings)
+
+knowledge_management_retriever = Chroma(
+    client=chroma,
+    collection_name="langchain_tools",
+    embedding_function=embeddings
+).as_retriever()
+
+knowledge_management_tool = create_retriever_tool(
+    knowledge_management_retriever,
+    "knowledge_management_search",
+    "Search for information about knowledge management and ticketing systems. Use this tool for questions related to maintaining knowledge bases, improving system knowledge, tracking questions, and managing ticketing systems. This tool provides insights on AI-powered knowledge management, building knowledge bases, and best practices for ticketing systems."
+)
+Tool 
+
+from langchain_community.document_loaders import WebBaseLoader
+from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain.vectorstores import Chroma
+from langchain_community.embeddings import HuggingFaceEmbeddings
+from langchain.tools.retriever import create_retriever_tool
+import chromadb
+import uuid
+
+urls = [
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4488111/",
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4342308/",
+    "https://muse.jhu.edu/content/crossref/journals/progress_in_community_health_partnerships_research_education_and_action/v009/9.3.cene.html",
+    "https://medium.com/@elle_mccann/building-community-and-engagement-around-data-2fb7d72b13b4",
+    "https://ctb.ku.edu/en/table-of-contents/assessment/assessing-community-needs-and-resources/collect-information/main"
+]
+
+def collection_exists(client, collection_name):
+    collections = client.list_collections()
+    return collection_name in [collection.name for collection in collections]
+
+def load_documentation():
+    embeddings = HuggingFaceEmbeddings()
+    chroma_client = chromadb.PersistentClient(path="./chroma_db")
+
+    if not collection_exists(chroma_client, "community_engagement_agent"):
+        loader = WebBaseLoader(urls)
+        data = loader.load()
+
+        documents = RecursiveCharacterTextSplitter(
+            chunk_size=1000, chunk_overlap=200
+        ).split_documents(data)
+
+        collection = chroma_client.create_collection("community_engagement_agent")
+        for doc in documents:
+            emb = embeddings.embed_documents([doc.page_content])
+            collection.add(
+                ids=[str(uuid.uuid1())], embeddings=emb, metadatas=[doc.metadata], documents=[doc.page_content]
+            )
+
+    chroma_retriever = Chroma(
+        client=chroma_client,
+        collection_name="community_engagement_agent",
+        embedding_function=embeddings,
+    ).as_retriever()
+
+    return create_retriever_tool(
+        chroma_retriever,
+        "community_engagement_search",
+        "Search for information about data collection, reporting, and community engagement initiatives. Use this tool for questions related to monitoring system performance, improving user satisfaction, and fostering community engagement."
+    )
+
+community_engagement_tool = load_documentation()
+Tool 
+
+from langchain_community.document_loaders.web_base import WebBaseLoader
+from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain.tools.retriever import create_retriever_tool
+from chromadb.api import ClientAPI
+from langchain_community.embeddings import HuggingFaceEmbeddings
+import chromadb
+import uuid
+
+# Initialize an instance of HuggingFaceEmbeddings
+embeddings = HuggingFaceEmbeddings()
+
+# Create a persistent ChromaDB client
+chroma = chromadb.PersistentClient(path="./chroma_db")
+
+def collection_exists(client: ClientAPI, collection_name: str) -> bool:
+    """Check if a collection exists in the ChromaDB client."""
+    collections = client.list_collections()
+    return any(collection.name == collection_name for collection in collections)
+
+# Discord API documentation URLs
+urls = [
+    "https://discordjs.guide/popular-topics/reactions.html#awaiting-a-reaction",
+    "https://github.com/discordjs/discord.js/blob/master/docs/topics/messageManagement.md",
+    "https://discordpy.rtfd.io/en/latest/api.html",
+    "https://discord.com/developers/docs/topics/gateway",
+    "https://discord.com/developers/docs/topics/oauth2",
+    "https://v12.discordjs.guide/popular-topics/audit-logs.html",
+    "https://deploy-preview-551--discordjs-guide.netlify.app/popular-topics/audit-logs.html",
+    "https://github.com/oliverstech/MessageLoggerForDiscord",
+    "https://birdie0.github.io/discord-webhooks-guide/",
+    "https://github.com/armfuldev/discord.js-cheatsheet",
+]
+
+def load_discord_documentation(
+    chroma: chromadb.PersistentClient,
+    embeddings: HuggingFaceEmbeddings,
+    collection_name: str = "langchain_tools",
+):
+    """Load Discord API documentation into the ChromaDB collection."""
+    if not collection_exists(chroma, collection_name):
+        # Load documents from URLs
+        loader = WebBaseLoader(urls)
+        data = loader.load()
+
+        # Split documents into smaller chunks
+        documents = RecursiveCharacterTextSplitter(
+            chunk_size=1000, chunk_overlap=200
+        ).split_documents(data)
+
+        # Create a new collection
+        collection = chroma.create_collection(collection_name)
+
+        # Add documents to the collection with embeddings and metadata
+        for doc in documents:
+            emb = embeddings.embed_documents([doc.page_content])
+            collection.add(
+                ids=[str(uuid.uuid4())],
+                embeddings=emb,
+                metadatas=doc.metadata,
+                documents=doc.page_content,
+            )
+
+# Load Discord documentation into the "discord_api" collection
+load_discord_documentation(chroma, embeddings, "discord_api")
+
+# Create a retriever tool for searching the Discord API documentation
+retriever_tool = create_retriever_tool(
+    chroma.as_retriever(),
+    "discord_api",
+    "Search the Discord API documentation. This tool covers Discord message management, reactions, webhooks, and more.",
+)
+Tool 
+
+from langchain_community.document_loaders import WebBaseLoader
+from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain.tools.retriever import create_retriever_tool
+from langchain.vectorstores.chroma import Chroma
+import chromadb
+from langchain_community.embeddings import HuggingFaceEmbeddings
+
+# Initialize an instance of HuggingFaceEmbeddings
+embeddings = HuggingFaceEmbeddings()
+
+# Initialize the Chroma client
+chroma_client = chromadb.PersistentClient(path="./chroma_db")
+
+def collection_exists(client, collection_name):
+    """Check if a collection exists in the Chroma client."""
+    collections = client.list_collections()
+    return collection_name in collections
+
+def load_discord_documentation(
+    chroma_client,
+    embeddings,
+    collection_name="discord_api_docs",
+):
+    """Load Discord API documentation into the Chroma client."""
+    if not collection_exists(chroma_client, collection_name):
+        urls = [
+            "https://discordjs.guide/popular-topics/reactions.html#awaiting-reactions",
+            "https://github.com/discordjs/discord.js/",
+            "https://discordpy.rtfd.io/",
+        ]
+        loader = WebBaseLoader(urls)
+        data = loader.load()
+
+        documents = RecursiveCharacterTextSplitter(
+            chunk_size=1000, chunk_overlap=200
+        ).split_documents(data)
+
+        chroma_client.create_collection(collection_name)
+        collection = getattr(chroma_client, collection_name)
+        for doc in documents:
+            emb = embeddings.embed_documents([doc.page_content])
+            collection.add(
+                ids=[str(uuid.uuid4())],
+                embeddings=emb,
+                metadatas=doc.metadata,
+                documents=doc.page_content,
+            )
+
+# Load the Discord API documentation
+load_discord_documentation(
+    chroma_client,
+    embeddings,
+)
+
+# Create a retriever tool for searching the Discord API documentation
+discord_retriever = create_retriever_tool(
+    Chroma(client=chroma_client, collection_name="discord_api_docs", embedding_function=embeddings).as_retriever(),
+    "discord_api_search",
+    "Search for information in the Discord API documentation.",
+)
+Tool 
+
+from langchain_community.document_loaders.web_base import WebBaseLoader
+from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain.tools.retriever import create_retriever_tool
+from langchain.vectorstores.chroma import Chroma
+import chromadb
+from chromadb.api import AdminAPI, ClientAPI
+from langchain_community.embeddings import HuggingFaceEmbeddings
+from uuid import uuid1
+
+# Define the URLs for the documentation
+urls = [
+    "https://www.knowledgebase.ai/blog/knowledge-base-best-practices/",
+    "https://www.linkedin.com/pulse/top-10-best-practices-knowledge-base-management-ankit-gupta",
+    "https://www.cmswire.com/information-management/5-tips-for-effective-knowledge-base-management/",
+    "https://www.zendesk.com/blog/knowledge-base-best-practices-for-customer-self-service/",
+    "https://support.zendesk.com/explore/how-do-i-integrate-external-help-centers-or-knowledge-bases-with-my-support-channel/",
+]
+
+def collection_exists(client: ClientAPI, collection_name: str) -> bool:
+    collections = client.list_collections()
+    return any(collection.name == collection_name for collection in collections)
+
+def load_documentation(
+    chroma: chromadb.PersistentClient,
+    embeddings: HuggingFaceEmbeddings,
+    collection_name: str = "knowledge_base_management",
+):
+    """
+    Load documentation into the ChromaDB.
+
+    :param chroma: The ChromaDB client instance.
+    :param embeddings: The embeddings model to use for encoding documents.
+    :param collection_name: The name of the collection to store the documentation.
+    """
+    if not collection_exists(chroma, collection_name):
+        loader = WebBaseLoader(urls)
+        data = loader.load()
+
+        documents = RecursiveCharacterTextSplitter(
+            chunk_size=1000, chunk_overlap=200
+        ).split_documents(data)
+
+        collection = chroma.create_collection(collection_name)
+        for doc in documents:
+            emb = embeddings.embed_documents([doc.page_content])
+            collection.add(
+                ids=[str(uuid1())],
+                embeddings=emb,
+                metadatas=doc.metadata,
+                documents=doc.page_content,
+            )
+
+# Initialize HuggingFaceEmbeddings and ChromaDB client
+embeddings = HuggingFaceEmbeddings()
+chroma_client = chromadb.PersistentClient(path="./chroma_db")
+
+# Load the documentation into the ChromaDB
+load_documentation(chroma_client, embeddings)
+
+# Create a retriever tool for the documentation
+retriever_tool = create_retriever_tool(
+    Chroma(client=chroma_client, collection_name="knowledge_base_management", embedding_function=embeddings).as_retriever(),
+    "knowledge_base_retriever",
+    "Search for best practices and information related to knowledge base management. This tool integrates with various sources to provide a comprehensive view of knowledge base management techniques.",
+)
+Tool 
+
+from langchain_community.document_loaders.web_base import WebBaseLoader
+from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain.tools.retriever import create_retriever_tool
+from chromadb.api import ClientAPI
+from langchain.vectorstores.chroma import Chroma
+import chromadb
+from langchain_community.embeddings import HuggingFaceEmbeddings
+import uuid
+
+# Embedding model and configuration
+model_path = "BAAI/bge-small-en-v1.5"
+model_kwargs = {"device": "cpu", "trust_remote_code": True}
+encode_kwargs = {"normalize_embeddings": True}
+
+# Initialize embeddings
+embeddings = HuggingFaceEmbeddings(
+    model_name=model_path,
+    model_kwargs=model_kwargs,
+    encode_kwargs=encode_kwargs,
+)
+
+# ChromaDB client
+chroma_client = chromadb.PersistentClient(path="./chroma_db")
+
+
+def collection_exists(client: ClientAPI, collection_name: str) -> bool:
+    collections = client.list_collections()
+    return any(collection.name == collection_name for collection in collections)
+
+
+# Documentation URLs
+documentation_urls = [
+    "https://www.scribblepost.com/internal-knowledge-base/",
+    "https://www.crazyegg.com/blog/faq-page-best-practices/",
+    "https://www.writethedocs.org/guide/integrating-external-documentation/",
+    "https://www.techwriter.org.uk/official-documentation-best-practices/",
+]
+
+
+def load_documentation(chroma_client, embeddings):
+    collection_name = "documentation_kb"
+
+    if not collection_exists(chroma_client, collection_name):
+        loader = WebBaseLoader(documentation_urls)
+        data = loader.load()
+
+        splitter = RecursiveCharacterTextSplitter(
+            chunk_size=1000, chunk_overlap=200
+        )
+        documents = splitter.split_documents(data)
+
+        collection = chroma_client.create_collection(collection_name)
+        for doc in documents:
+            embedding = embeddings.embed_documents([doc.page_content])[0]
+            metadata = doc.metadata
+            document_content = doc.page_content
+
+            collection.add(
+                ids=[str(uuid.uuid4())],
+                embeddings=embedding,
+                metadatas=metadata,
+                documents=document_content,
+            )
+
+
+load_documentation(chroma_client, embeddings)
+
+# Create retriever tool
+retriever_tool = create_retriever_tool(
+    Chroma(
+        client=chroma_client,
+        collection_name="documentation_kb",
+        embedding_function=embeddings,
+    ).as_retriever(),
+    "documentation_search",
+    "Search for tools, best practices, and information in the documentation knowledge base. This tool integrates with external sources to provide accurate and up-to-date content.",
+)
+Tool 
+
+from langchain_community.document_loaders.web_base import WebBaseLoader
+from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain.tools.retriever import create_retriever_tool
+from langchain.vectorstores.chroma import Chroma
+import chromadb
+from chromadb.api import AdminAPI, ClientAPI
+from langchain_community.embeddings import HuggingFaceEmbeddings
+import uuid
+
+def collection_exists(client: ClientAPI, collection_name: str) -> bool:
+    collections = client.list_collections()
+    return any(collection.name == collection_name for collection in collections)
+
+embeddings = HuggingFaceEmbeddings(
+    model_name="BAAI/bge-small-en-v1.5",
+    model_kwargs={"device": "cpu", "trust_remote_code": True},
+    encode_kwargs={"normalize_embeddings": True},
+)
+
+chroma = chromadb.PersistentClient(path="./chroma_db")
+
+collection_name = "trusted_websites"
+
+urls = [
+    "www.gov.uk",
+    "www.usa.gov",
+    "www.mit.edu",
+    "www.who.int",
+    "www.un.org",
+    "www.nytimes.com",
+    "www.bbc.co.uk",
+]
+
+def load_documentation(
+    chroma: chromadb.PersistentClient,
+    embeddings: HuggingFaceEmbeddings,
+    urls: list[str],
+):
+    if not collection_exists(chroma, collection_name):
+        loader = WebBaseLoader(urls)
+        data = loader.load()
+
+        documents = RecursiveCharacterTextSplitter(
+            chunk_size=1000, chunk_overlap=200
+        ).split_documents(data)
+
+        collection = chroma.create_collection(collection_name)
+        for doc in documents:
+            emb = embeddings.embed_documents([doc.page_content])
+            collection.add(
+                ids=[str(uuid.uuid4())],
+                embeddings=emb,
+                metadatas=doc.metadata,
+                documents=doc.page_content,
+            )
+
+load_documentation(chroma, embeddings, urls)
+
+retriever_tool = create_retriever_tool(
+    chroma.as_retriever(),
+    collection_name,
+    "Search for tools and information in trusted external sources and the internal knowledge base.",
+)
+Tool 
+
+from langchain_community.document_loaders.web_base import WebBaseLoader
+from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain.tools.retriever import create_retriever_tool
+from langchain.vectorstores.chroma import Chroma
+from langchain_community.embeddings import HuggingFaceEmbeddings
+import chromadb
+from chromadb.api import AdminAPI, ClientAPI
+
+# Initialize HuggingFaceEmbeddings with default parameters
+embeddings = HuggingFaceEmbeddings()
+
+# Set the path to the ChromaDB
+chroma = chromadb.PersistentClient(path="./chroma_db")
+
+
+def collection_exists(client: ClientAPI, collection_name: str) -> bool:
+    """Check if a collection exists in the ChromaDB."""
+    collections = client.list_collections()
+    return any(collection.name == collection_name for collection in collections)
+
+
+def load_documentation(
+    chroma: chromadb.PersistentClient,
+    embeddings: HuggingFaceEmbeddings,
+    collection_name: str = "langchain_agent_docs",
+    urls: list[str] = [],
+):
+    """Load documentation into the ChromaDB."""
+    if not collection_exists(client=chroma, collection_name=collection_name):
+        loader = WebBaseLoader(urls=urls)
+        data = loader.load()
+
+        documents = RecursiveCharacterTextSplitter(
+            chunk_size=1000, chunk_overlap=200
+        ).split_documents(data)
+
+        collection = chroma.create_collection(collection_name)
+        for doc in documents:
+            emb = embeddings.embed_documents([doc.page_content])
+            collection.add(
+                ids=[str(uuid.uuid4())],
+                embeddings=emb,
+                metadatas=doc.metadata,
+                documents=doc.page_content,
+            )
+
+# Load documentation into the ChromaDB
+load_documentation(chroma, embeddings, collection_name="langchain_agent_docs", urls=[])
+
+# Create the retriever tool
+retriever = Chroma(
+    client=chroma,
+    collection_name="langchain_agent_docs",
+    embedding_function=embeddings,
+)
+
+retriever_tool = create_retriever_tool(
+    retriever=retriever,
+    name="langchain_agent",
+    description="This agent generates answers using advanced language models and natural language processing. It provides intelligent, contextually appropriate responses to user queries.",
+)
+Tool 
+
+from langchain_community.document_loaders.web_base import WebBaseLoader
+from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain.tools.retriever import create_retriever_tool
+from langchain.vectorstores.chroma import Chroma
+from chromadb.api import AdminAPI, ClientAPI
+import chromadb
+from langchain_community.embeddings import HuggingFaceEmbeddings
+from typing import List
+
+def collection_exists(client: ClientAPI, collection_name: str) -> bool:
+    return any(collection.name == collection_name for collection in client.list_collections())
+
+urls = [
+    "https://www.researchgate.net/publication/220809061_Natural_Language_Processing_An_Introduction",
+    "https://onlinelibrary.wiley.com/doi/pdf/10.1002/9780470743488.ch1",
+    "https://www.researchgate.net/publication/221196859_Natural_Language_Generation_A_Survey",
+]
+
+def load_nlp_documentation(
+    chroma: chromadb.PersistentClient,
+    embeddings: HuggingFaceEmbeddings,
+    urls: List[str],
+):
+    collection_name = "nlp_documentation"
+
+    if collection_exists(chroma.client, collection_name):
+        print(f"Collection '{collection_name}' already exists. Skipping loading documentation.")
+        return
+
+    loader = WebBaseLoader(urls)
+    data = loader.load()
+
+    documents = RecursiveCharacterTextSplitter(
+        chunk_size=1000, chunk_overlap=200
+    ).split_documents(data)
+
+    collection = chroma.create_collection(collection_name)
+    for doc in documents:
+        emb = embeddings.embed_documents([doc.page_content])
+        collection.add(
+            ids=[str(uuid.uuid1())],
+            embeddings=emb,
+            metadatas=doc.metadata,
+            documents=doc.page_content,
+        )
+
+load_nlp_documentation(chroma, embeddings, urls)
+
+nlp_retriever = create_retriever_tool(
+    Chroma(client=chroma, collection_name=collection_name, embedding_function=embeddings).as_retriever(),
+    "nlp_documentation_search",
+    "Search for Natural Language Processing (NLP) documentation and resources. This agent provides access to research papers and surveys related to NLP and language generation.",
+)
+Tool 
+
+from langchain_community.document_loaders.web_base import WebBaseLoader
+from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain.tools.retriever import create_retriever_tool
+from langchain.vectorstores.chroma import Chroma
+from langchain_community.embeddings import HuggingFaceEmbeddings
+import chromadb
+from chromadb.api import AdminAPI, ClientAPI
+import uuid
+
+def collection_exists(client: ClientAPI, collection_name: str) -> bool:
+    """Check if a collection exists in the ChromaDB client."""
+    collections = client.list_collections()
+    return any(collection.name == collection_name for collection in collections)
+
+def load_documentation(chroma_client: ClientAPI, embeddings: HuggingFaceEmbeddings, collection_name: str, urls: list[str]) -> None:
+    """Load documentation from URLs into a ChromaDB collection."""
+    if not collection_exists(chroma_client, collection_name):
+        loader = WebBaseLoader(urls)
+        data = loader.load()
+
+        documents = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200).split_documents(data)
+
+        collection = chroma_client.create_collection(collection_name)
+        for doc in documents:
+            emb = embeddings.embed_documents([doc.page_content])
+            collection.add(
+                ids=[str(uuid.uuid4())],
+                embeddings=emb,
+                metadatas=doc.metadata,
+                documents=doc.page_content,
+            )
+
+# Initialize ChromaDB client and embeddings
+chroma_client = chromadb.PersistentClient(path="./chroma_db")
+embeddings = HuggingFaceEmbeddings()
+
+# Documentation URLs
+urls = [
+    "https://www.liveperson.com/content-assets/lp-resources/thought-leadership/whitepapers/6-best-practices-for-writing-chatbot-responses.pdf",
+    "https://www.creative-virtual.com/7-tips-for-writing-effective-chatbot-responses/",
+    "https://medium.com/@peoplepattern/5-tips-for-writing-better-chatbot-responses-c3951d66a9b8",
+    "https://www.comm100.com/blog/how-to-write-chatbot-responses/",
+    "https://www.livechat.com/blog/writing-chatbot-responses/",
+]
+
+# Load documentation into ChromaDB
+load_documentation(chroma_client, embeddings, "response_guidelines", urls)
+
+# Create Retriever Tool
+retriever_tool = create_retriever_tool(
+    Chroma(client=chroma_client, collection_name="response_guidelines", embedding_function=embeddings).as_retriever(),
+    "response_guidelines_search",
+    "Search for guidelines and best practices for writing chatbot responses. This includes tips on language, structure, and tone to ensure effective and engaging conversations with users.",
+)
+Tool 
+
+from langchain_community.document_loaders.web_base import WebBaseLoader
+from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain.tools.retriever import create_retriever_tool
+from langchain.vectorstores.chroma import Chroma
+import chromadb
+from uuid import uuid1
+from langchain_community.embeddings import HuggingFaceEmbeddings
+from chromadb.api import AdminAPI, ClientAPI
+
+def collection_exists(client: ClientAPI, collection_name: str) -> bool:
+    """Check if a collection exists in the ChromaDB client."""
+    collections = client.list_collections()
+    return any(collection.name == collection_name for collection in collections)
+
+embeddings = HuggingFaceEmbeddings(
+    model_name="BAAI/bge-small-en-v1.5",
+    model_kwargs={"device": "cpu", "trust_remote_code": True},
+    encode_kwargs={"normalize_embeddings": True},
+)
+
+chroma_client = chromadb.PersistentClient(path="./chroma_db")
+
+# Documentation URLs
+urls = [
+    "This agent refines answers, performs sentiment analysis, and learns from human edits. It is vital for maintaining high-quality responses and adapting to user feedback and sentiment. Used to ensure responses align with server policies and to identify potentially sensitive issues. (server_guidelines)",
+]
+
+def load_server_guidelines(chroma_client, embeddings):
+    """Load documentation for the server guidelines agent."""
+    if not collection_exists(chroma_client, "server_guidelines"):
+        loader = WebBaseLoader(urls)
+        data = loader.load()
+
+        documents = RecursiveCharacterTextSplitter(
+            chunk_size=1000, chunk_overlap=200
+        ).split_documents(data)
+
+        collection = chroma_client.create_collection("server_guidelines")
+
+        for doc in documents:
+            emb = embeddings.embed_documents([doc.page_content])
+            collection.add(
+                ids=[str(uuid1())],
+                embeddings=emb,
+                metadatas=doc.metadata,
+                documents=doc.page_content,
+            )
+
+load_server_guidelines(chroma_client, embeddings)
+
+retriever_tool = create_retriever_tool(
+    Chroma(client=chroma_client, collection_name="langchain_tools", embedding_function=embeddings).as_retriever(),
+    "server_guidelines_search",
+    "Search for server guidelines and policies. This tool helps ensure responses adhere to server rules and regulations and can identify potentially sensitive issues.",
+)
+Tool 
+
+from langchain_community.document_loaders.web_base import WebBaseLoader
+from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain.tools.retriever import create_retriever_tool
+from langchain.vectorstores.chroma import Chroma
+import chromadb
+from langchain_community.embeddings import HuggingFaceEmbeddings
+from chromadb.api import AdminAPI, ClientAPI
+from uuid import uuid4
+
+# Initialize HuggingFaceEmbeddings with default parameters
+embeddings = HuggingFaceEmbeddings()
+
+# Initialize Chroma client
+chroma_client = chromadb.PersistentClient(path="./chroma_db")
+
+
+def collection_exists(client: ClientAPI, collection_name: str) -> bool:
+    """Check if a collection exists in the Chroma database."""
+    collections = client.list_collections()
+    return any(collection.name == collection_name for collection in collections)
+
+
+def load_documentation(
+    chroma_client: chromadb.PersistentClient,
+    embeddings: HuggingFaceEmbeddings,
+    collection_name: str = "langchain_tools",
+    urls: list[str] = ["https://blog.cohere.com/cohere-ai-model-guidelines/"],
+) -> None:
+    """
+    Load documentation from a list of URLs into a Chroma collection.
+
+    :param chroma_client: The Chroma client instance.
+    :param embeddings: The embeddings instance to use for encoding documents.
+    :param collection_name: The name of the collection to store the documentation.
+    :param urls: A list of URLs to load documentation from.
+    """
+    if not collection_exists(chroma_client, collection_name):
+        loader = WebBaseLoader(urls=urls)
+        data = loader.load()
+
+        documents = RecursiveCharacterTextSplitter(
+            chunk_size=1000, chunk_overlap=200
+        ).split_documents(data)
+
+        collection = chroma_client.create_collection(collection_name)
+        for doc in documents:
+            emb = embeddings.embed_documents([doc.page_content])
+            collection.add(
+                ids=[str(uuid4())],
+                embeddings=emb,
+                metadatas=doc.metadata,
+                documents=doc.page_content,
+            )
+
+
+load_documentation(chroma_client, embeddings, "ai_model_guidelines")
+
+retriever_tool = create_retriever_tool(
+    Chroma(client=chroma_client, collection_name="ai_model_guidelines", embedding_function=embeddings).as_retriever(),
+    "ai_model_guidelines_search",
+    "Search for information and guidelines related to AI models.",
+)
+Tool 
+
+from langchain_community.document_loaders import WebBaseLoader
+from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain.tools.retriever import create_retriever_tool
+from langchain.vectorstores.chroma import Chroma
+import chromadb
+from uuid import uuid1
+
+def collection_exists(client: chromadb.ClientAPI, collection_name: str) -> bool:
+    collections = client.list_collections()
+    return any(collection.name == collection_name for collection in collections)
+
+def load_documentation(chroma: chromadb.ClientAPI, embeddings) -> None:
+    collection_name = "langchain_tools"
+    if not collection_exists(chroma, collection_name):
+        urls = [
+            "This agent handles the posting of responses, monitors user feedback, and manages the ticketing system.",
+            "This agent is essential for managing the final stages of response delivery and handling user feedback. It ensures posted responses meet the server's communication standards.",
+        ]
+        loader = WebBaseLoader(urls)
+        data = loader.load()
+        documents = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200).split_documents(data)
+
+        collection = chroma.create_collection(collection_name)
+        for doc in documents:
+            emb = embeddings.embed_documents([doc.page_content])
+            collection.add(
+                ids=[str(uuid1())],
+                embeddings=emb,
+                metadatas=doc.metadata,
+                documents=doc.page_content,
+            )
+
+chroma_client = chromadb.PersistentClient(path="./chroma_db")
+load_documentation(chroma_client, embeddings)
+
+retriever_tool = create_retriever_tool(
+    Chroma(client=chroma_client, collection_name="langchain_tools", embedding_function=embeddings).as_retriever(),
+    "langchain_agent_retriever",
+    "Retrieve information related to the LangChain agent. This tool covers response posting, user feedback monitoring, ticketing system management, and ensuring communication standards.",
+)
+Tool 
+
+from langchain_community.document_loaders.web_base import WebBaseLoader
+from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain.tools.retriever import create_retriever_tool
+from chromadb.api import ClientAPI
+from langchain.vectorstores.chroma import Chroma
+import chromadb
+from langchain_community.embeddings import HuggingFaceEmbeddings
+
+# Assuming these variables are already defined
+model_path = "BAAI/bge-small-en-v1.5"
+model_kwargs = {"device": "cpu", "trust_remote_code": True}
+encode_kwargs = {"normalize_embeddings": True}
+
+embeddings = HuggingFaceEmbeddings(
+    model_name=model_path,
+    model_kwargs=model_kwargs,
+    encode_kwargs=encode_kwargs,
+)
+
+chroma = chromadb.PersistentClient(path="./chroma_db")
+
+
+def collection_exists(client: ClientAPI, collection_name: str) -> bool:
+    """Check if a collection exists in the ChromaDB."""
+    collections = client.list_collections()
+    filtered_collection = list(
+        filter(lambda collection: collection.name == collection_name, collections)
+    )
+    return len(filtered_collection) > 0
+
+
+def load_documentation(
+    chroma: ClientAPI,
+    embeddings: HuggingFaceEmbeddings,
+    urls: list[str],
+    description: str,
+    collection_name: str = "server_policy_guide",
+):
+    """Load documentation into ChromaDB and create a retriever tool."""
+    if not collection_exists(chroma, collection_name):
+        loader = WebBaseLoader(urls=urls, description=description)
+        data = loader.load()
+
+        documents = RecursiveCharacterTextSplitter(
+            chunk_size=1000, chunk_overlap=200
+        ).split_documents(data)
+
+        collection = chroma.create_collection(collection_name)
+        for doc in documents:
+            embeddings_data = embeddings.embed_documents([doc.page_content])
+            collection.add(
+                ids=[str(uuid.uuid4())],
+                embeddings=embeddings_data,
+                metadatas=doc.metadata,
+                documents=doc.page_content,
+            )
+
+load_documentation(
+    chroma_client=chroma,
+    embeddings=embeddings,
+    urls=[
+        "https://www.geneseo.edu/bbo/policies",
+        "https://tickets.levittlosangeles.org/info/policies",
+        "https://www.kentuckyperformingarts.org/ticketing-policy/",
+        "https://www.sfjazz.org/tickets/ticket-policies/",
+        "https://www.cfatix.com/policies/",
+        "https://www.ticketmaster.com/h/purchase-policy.html",
+        "http://web.mit.edu/eventguide/eventregulations/tickets.html",
+        "https://manoa.hawaii.edu/liveonstage/resources/tickets/",
+    ],
+    description="This agent handles the posting of responses, monitors user feedback, and manages the ticketing system. It is essential for the final stages of response delivery and handles user feedback. The agent manages the ticketing system and prioritizes issues based on server policies and guidelines.",
+)
+
+retriever_tool = create_retriever_tool(
+    retriever=chroma.as_retriever(),
+    tool_name="server_policy_search",
+    instruction="Search for information and guidelines related to server policies and ticketing systems. This tool assists with questions or issues regarding response posting, user feedback management, and ticket prioritization.",
+)
+Tool 
+
+from langchain_community.document_loaders import WebBaseLoader
+from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain.tools.retriever import create_retriever_tool
+from langchain.vectorstores.chroma import Chroma
+import uuid
+
+urls = [
+    "https://discord.com/developers/docs/intro",
+    "https://github.com/discord/discord-api-docs",
+    "https://discord.com/guidelines",
+    "https://support.discord.com/hc/en-us/articles/360035969312",
+    "https://support.discord.com/hc/en-us/articles/115001987272",
+    "https://discord.com/moderation"
+]
+
+def load_discord_documentation(chroma, embeddings):
+    if not collection_exists(chroma, "langchain_tools"):
+        loader = WebBaseLoader(urls)
+        data = loader.load()
+
+        documents = RecursiveCharacterTextSplitter(
+            chunk_size=1000, chunk_overlap=200
+        ).split_documents(data)
+
+        collection = chroma.create_collection("langchain_tools")
+        for doc in documents:
+            emb = embeddings.embed_documents([doc.page_content])
+            collection.add(
+                ids=[str(uuid.uuid1())], embeddings=emb, metadatas=doc.metadata, documents=doc.page_content
+            )
+
+discord_retriever_tool = create_retriever_tool(
+    Chroma(client=chroma, collection_name="langchain_tools", embedding_function=embeddings).as_retriever(),
+    "discord_search",
+    "Search for information about Discord server monitoring, initial triage, and Discord's API. For any questions about Discord guidelines, moderation, or API, you must use this tool!"
+)
+Tool 
+
+import uuid
+from langchain_community.document_loaders import WebBaseLoader
+from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain.tools.retriever import create_retriever_tool
+from langchain.vectorstores.chroma import Chroma
+
+urls = [
+    "https://discord.com/developers/docs/intro",
+    "https://github.com/discord/discord-api-docs",
+    "https://support.discord.com/hc/en-us/articles/212889058-Discord-s-Official-API",
+    "https://discord.js.org/",
+    "https://github.com/discord/discord-api-docs/blob/main/docs/Reference.md",
+    "https://medium.com/cxinnovations/conversational-ux-for-chatbots-ca8cc8e08ea",
+    "https://www.gartner.com/en/documents/4014184",
+    "https://docs.dashbot.io/platform/best-practices/",
+    "https://www.chatbot.com/chatbot-best-practices/",
+    "https://www.chatbotguide.org/"
+]
+
+def load_documentation(chroma, embeddings):
+    if not collection_exists(chroma, "langchain_tools"):
+        loader = WebBaseLoader(urls)
+        data = loader.load()
+
+        documents = RecursiveCharacterTextSplitter(
+            chunk_size=1000, chunk_overlap=200
+        ).split_documents(data)
+
+        collection = chroma.create_collection("langchain_tools")
+        for doc in documents:
+            emb = embeddings.embed_documents([doc.page_content])
+            collection.add(
+                ids=[str(uuid.uuid4())], embeddings=emb, metadatas=doc.metadata, documents=[doc.page_content]
+            )
+
+discord_agent_retriever_tool = create_retriever_tool(
+    Chroma(
+        client=chroma,
+        collection_name="langchain_tools",
+        embedding_function=embeddings
+    ).as_retriever(),
+    "discord_agent_search",
+    "Search for information about Discord API, best practices for chatbots, and related topics. Use this tool for any questions about Discord integration, API usage, or chatbot development."
+)
+Tool 
+
+from langchain_community.document_loaders import WebBaseLoader
+from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain.vectorstores import Chroma
+from langchain.tools.retriever import create_retriever_tool
+import uuid
+
+urls = [
+    "https://www.phpkb.com/kb/article/building-a-knowledge-base-with-artificial-intelligence-295.html",
+    "https://medium.com/@oalmourad/artificial-intelligence-based-knowledge-management-part-i-state-of-knowledge-management-d25b5efd1a29",
+    "https://www.artificialintelligence-news.com/2023/12/05/overcoming-the-last-mile-problem-in-knowledge-management-from-ai-vendors/",
+    "https://ieeexplore.ieee.org/document/1281736/",
+    "https://www.earley.com/insights/knowledge-managements-rebirth-knowledge-engineering-artificial-intelligence",
+    "https://towardsdatascience.com/seat-of-knowledge-ai-systems-with-deeply-structure-knowledge-37f1a5ab4bc5?gi=a6975bda173f"
+]
+
+def load_documentation(chroma, embeddings):
+    if not collection_exists(chroma, "langchain_tools"):
+        loader = WebBaseLoader(urls)
+        data = loader.load()
+
+        documents = RecursiveCharacterTextSplitter(
+            chunk_size=1000, chunk_overlap=200
+        ).split_documents(data)
+
+        collection = chroma.create_collection("langchain_tools")
+        for doc in documents:
+            emb = embeddings.embed_documents([doc.page_content])
+            collection.add(
+                ids=[str(uuid.uuid1())], embeddings=emb, metadatas=doc.metadata, documents=doc.page_content
+            )
+
+load_documentation(chroma, embeddings)
+
+knowledge_base_tool = create_retriever_tool(
+    Chroma(
+        client=chroma,
+        collection_name="langchain_tools",
+        embedding_function=embeddings
+    ).as_retriever(),
+    "knowledge_base_search",
+    "Search for information about AI-based knowledge management and knowledge bases. For any questions about AI and knowledge management, you must use this tool!"
+)
+Tool 
+
+from langchain_community.document_loaders import WebBaseLoader
+from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain.vectorstores import Chroma
+from langchain.embeddings import HuggingFaceEmbeddings
+from langchain.tools.retriever import create_retriever_tool
+import uuid
+import logging
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+urls = [
+    "https://www.phpkb.com/kb/article/building-a-knowledge-base-with-artificial-intelligence-295.html",
+    "https://medium.com/@oalmourad/artificial-intelligence-based-knowledge-management-part-i-state-of-knowledge-management-d25b5efd1a29",
+    "https://www.sciencedirect.com/science/article/pii/S0007681322000222",
+    "https://www.earley.com/insights/knowledge-managements-rebirth-knowledge-engineering-artificial-intelligence",
+    "https://deepai.org/publication/knowledge-management-system-with-nlp-assisted-annotations-a-brief-survey-and-outlook",
+    "https://blog.quickchat.ai/post/how-to-structure-your-knowledge-base/",
+    "https://towardsdatascience.com/creating-smart-knowledge-base-systems-kbs-using-advanced-nlp-library-b5c21dfafcd1",
+    "https://research.aimultiple.com/faq-chatbot/",
+    "https://www.hellotars.com/blog/how-to-create-and-use-an-ai-based-chatbot-to-answer-faqs-comprehensive-guide/",
+    "https://ieeexplore.ieee.org/document/9908774",
+    "https://landbot.io/blog/ai-faq-chatbot",
+    "https://chatbotsmagazine.com/why-you-cant-just-convert-faqs-into-a-chatbot-1-1-92205141d008",
+    "https://blog.hootsuite.com/faq-chatbot/",
+    "https://bdtechtalks.com/2023/05/01/customize-chatgpt-llm-embeddings/",
+    "https://www.infoworld.com/article/3712860/retrieval-augmented-generation-step-by-step.html",
+    "https://docs.kapa.ai/blog/optimizing-technical-documentation-for-llms",
+    "https://www.databricks.com/blog/creating-bespoke-llm-ai-generated-documentation",
+    "https://www.expert.ai/blog/3-best-practices-for-implementing-hybrid-ai-to-nlu-applications/",
+    "https://towardsdatascience.com/the-complexities-and-challenges-of-integrating-llm-into-applications-913d4461bbe0",
+    "https://towardsdatascience.com/how-i-turned-my-companys-docs-into-a-searchable-database-with-openai-4f2d34bd8736"
+]
+
+def load_documentation(chroma, embeddings):
+    collection_name = "langchain_tools"
+    if not collection_exists(chroma, collection_name):
+        try:
+            logger.info(f"Loading documents for {collection_name}")
+            loader = WebBaseLoader(urls)
+            data = loader.load()
+
+            text_splitter = RecursiveCharacterTextSplitter(
+                chunk_size=1000, chunk_overlap=200
+            )
+            documents = text_splitter.split_documents(data)
+
+            collection = chroma.create_collection(collection_name)
+            for doc in documents:
+                emb = embeddings.embed_documents([doc.page_content])
+                collection.add(
+                    ids=[str(uuid.uuid1())], embeddings=emb, metadatas=doc.metadata, documents=[doc.page_content]
+                )
+            logger.info(f"Successfully loaded {len(documents)} documents into {collection_name}")
+        except Exception as e:
+            logger.error(f"Error loading documents: {str(e)}")
+    else:
+        logger.info(f"Collection {collection_name} already exists. Skipping document loading.")
+
+def collection_exists(client, collection_name):
+    collections = client.list_collections()
+    return any(collection.name == collection_name for collection in collections)
+
+embeddings = HuggingFaceEmbeddings()
+chroma = Chroma(persist_directory="./chroma_db")
+
+load_documentation(chroma, embeddings)
+
+retriever = Chroma(
+    client=chroma,
+    collection_name="langchain_tools",
+    embedding_function=embeddings,
+).as_retriever()
+
+ai_knowledge_base_tool = create_retriever_tool(
+    retriever,
+    "ai_knowledge_base_search",
+    "Search for information about AI-powered knowledge bases, FAQ systems, and documentation integration. Use this tool for questions related to building and managing AI-enhanced knowledge management systems, chatbots for FAQs, and integrating AI with documentation."
+)
+Tool 
+
+from langchain_community.document_loaders import WebBaseLoader
+from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain.vectorstores import Chroma
+from langchain.tools.retriever import create_retriever_tool
+import uuid
+
+urls = [
+    "https://www.sciencedirect.com/science/article/pii/S1877050920314332",
+    "https://www.sciencedirect.com/science/article/pii/S1877050920314320",
+    "https://www.ibm.com/cloud/learn/knowledge-base",
+    "https://www.atlassian.com/itsm/knowledge-management",
+    "https://www.sciencedirect.com/science/article/pii/S1877050920314356",
+    "https://www.intercom.com/blog/faq-chatbot/",
+    "https://www.sprinklr.com/cxm/create-use-ai-chatbot-answer-faqs/",
+    "https://www.intercom.com/blog/why-you-cant-just-convert-faqs-into-a-chatbot/",
+    "https://www.kommunicate.io/blog/faq-chatbot/",
+    "https://www.moveworks.com/insights/turn-your-faq-pages-into-conversational-ai",
+    "https://eugeneyan.com/writing/llm-patterns/#retrieval-augmented-generation-to-add-knowledge",
+    "https://www.pinecone.io/learn/langchain-prompt-template/",
+    "https://documentation.divio.com/",
+    "https://arxiv.org/abs/2302.09468",
+    "https://zapier.com/blog/ai-tools-workflow/"
+]
+
+def load_documentation(chroma, embeddings):
+    if not collection_exists(chroma, "langchain_tools"):
+        loader = WebBaseLoader(urls)
+        documents = loader.load()
+
+        text_splitter = RecursiveCharacterTextSplitter(
+            chunk_size=1000, chunk_overlap=200
+        )
+        split_documents = text_splitter.split_documents(documents)
+
+        collection = chroma.create_collection("langchain_tools")
+        for doc in split_documents:
+            emb = embeddings.embed_documents([doc.page_content])
+            collection.add(
+                ids=[str(uuid.uuid1())], embeddings=emb, metadatas=doc.metadata, documents=doc.page_content
+            )
+
+chroma_retriever = Chroma(
+    client=chroma,
+    collection_name="langchain_tools",
+    embedding_function=embeddings,
+).as_retriever()
+
+knowledge_base_tool = create_retriever_tool(
+    chroma_retriever,
+    "knowledge_base_search",
+    "Search the internal knowledge base and FAQ system. Use this tool for questions related to AI-based knowledge management, FAQ chatbots, and documentation integration."
+)
+Tool 
+
+from langchain_community.document_loaders import WebBaseLoader
+from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain.vectorstores import Chroma
+from langchain.tools.retriever import create_retriever_tool
+import uuid
+
+urls = [
+    "https://www.topbots.com/choosing-the-right-language-model/",
+    "https://www.kdnuggets.com/7-steps-to-mastering-large-language-models-llms",
+    "https://www.topbots.com/leading-nlp-language-models-2020/",
+    "https://www.borealisai.com/research-blogs/a-high-level-overview-of-large-language-models/",
+    "https://www.nvidia.com/en-us/lp/ai-data-science/large-language-models-ebook/",
+    "https://www.analyticsvidhya.com/blog/2023/09/cutting-edge-tricks-of-applying-large-language-models/",
+    "https://arxiv.org/abs/2307.06435v2"
+]
+
+def load_language_model_documentation(chroma, embeddings):
+    if not collection_exists(chroma, "language_model_knowledge"):
+        loader = WebBaseLoader(urls)
+        data = loader.load()
+
+        documents = RecursiveCharacterTextSplitter(
+            chunk_size=1000, chunk_overlap=200
+        ).split_documents(data)
+
+        collection = chroma.create_collection("language_model_knowledge")
+        for doc in documents:
+            emb = embeddings.embed_documents([doc.page_content])
+            collection.add(
+                ids=[str(uuid.uuid1())], embeddings=emb, metadatas=doc.metadata, documents=doc.page_content
+            )
+
+load_language_model_documentation(chroma, embeddings)
+
+language_model_retriever = Chroma(
+    client=chroma,
+    collection_name="language_model_knowledge",
+    embedding_function=embeddings,
+).as_retriever()
+
+language_model_tool = create_retriever_tool(
+    language_model_retriever,
+    "language_model_search",
+    "Search for information about language models and NLP. For any questions about language models or natural language processing, you must use this tool!"
+)
+Tool 
+
+from langchain_community.document_loaders import WebBaseLoader
+from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain.vectorstores import Chroma
+from langchain.tools.retriever import create_retriever_tool
+import uuid
+
+urls = [
+    "https://www.topbots.com/choosing-the-right-language-model/",
+    "https://www.databricks.com/resources/ebook/tap-full-potential-llm",
+    "https://arxiv.org/abs/2309.07864v2",
+    "https://www.nvidia.com/en-us/lp/ai-data-science/large-language-models-ebook/",
+    "https://ai-infrastructure.org/agents-llms-and-smart-apps-report-2023/?utm_source=newsletter&amp;utm_medium=email&amp;utm_campaign=yaro",
+    "https://towardsdatascience.com/choosing-the-right-language-model-for-your-nlp-use-case-1288ef3c4929?gi=967f5de203d7",
+    "https://www.kdnuggets.com/7-steps-to-mastering-large-language-models-llms?utm_source=rss&utm_medium=rss&utm_campaign=7-steps-to-mastering-large-language-models-llms",
+    "https://research.aimultiple.com/large-language-models/"
+]
+
+def load_documentation(chroma, embeddings):
+    if not collection_exists(chroma, "langchain_tools"):
+        loader = WebBaseLoader(urls)
+        data = loader.load()
+
+        documents = RecursiveCharacterTextSplitter(
+            chunk_size=1000, chunk_overlap=200
+        ).split_documents(data)
+
+        collection = chroma.create_collection("langchain_tools")
+        for doc in documents:
+            emb = embeddings.embed_documents([doc.page_content])
+            collection.add(
+                ids=[str(uuid.uuid1())], embeddings=emb, metadatas=doc.metadata, documents=doc.page_content
+            )
+
+load_documentation(chroma, embeddings)
+
+language_model_retriever_tool = create_retriever_tool(
+    Chroma(client=chroma, collection_name="langchain_tools", embedding_function=embeddings).as_retriever(),
+    "language_model_search",
+    "Search for information about language models, natural language processing, and AI-powered answer generation. Use this tool for questions related to choosing the right language model, understanding LLM capabilities, or implementing NLP solutions."
+)
+Tool 
+
+from langchain_community.document_loaders import WebBaseLoader
+from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain.vectorstores import Chroma
+from langchain.tools.retriever import create_retriever_tool
+from langchain_community.embeddings import HuggingFaceEmbeddings
+import uuid
+import chromadb
+
+# Initialize embeddings
+embeddings = HuggingFaceEmbeddings()
+
+# Initialize Chroma client
+chroma = chromadb.PersistentClient(path="./chroma_db")
+
+urls = [
+    "https://learn.microsoft.com/en-us/azure/ai-services/openai/concepts/system-message",
+    "https://www.promptingguide.ai/",
+    "https://learn.microsoft.com/en-us/azure/ai-services/openai/concepts/advanced-prompt-engineering",
+    "https://research.aimultiple.com/large-language-models/",
+    "https://www.borealisai.com/research-blogs/a-high-level-overview-of-large-language-models/",
+    "https://scale.com/guides/large-language-models",
+    "https://research.google/pubs/pub51115/",
+    "https://www.aclweb.org/anthology/2020.coling-industry.7.pdf"
+]
+
+def collection_exists(client, collection_name):
+    collections = client.list_collections()
+    return collection_name in [col.name for col in collections]
+
+def load_documentation(chroma, embeddings):
+    if not collection_exists(chroma, "langchain_tools"):
+        loader = WebBaseLoader(urls)
+        data = loader.load()
+
+        documents = RecursiveCharacterTextSplitter(
+            chunk_size=1000, chunk_overlap=200
+        ).split_documents(data)
+
+        collection = chroma.create_collection("langchain_tools")
+        for doc in documents:
+            emb = embeddings.embed_documents([doc.page_content])
+            collection.add(
+                ids=[str(uuid.uuid1())], embeddings=emb, metadatas=doc.metadata, documents=[doc.page_content]
+            )
+
+load_documentation(chroma, embeddings)
+
+chroma_retriever = Chroma(
+    client=chroma,
+    collection_name="langchain_tools",
+    embedding_function=embeddings,
+).as_retriever()
+
+language_model_retriever_tool = create_retriever_tool(
+    chroma_retriever,
+    "language_model_search",
+    "Search for information about advanced language models, prompt engineering, and natural language processing. Use this tool for questions related to language model concepts, techniques, and applications."
+)
+Tool 
+
+from langchain_community.document_loaders import WebBaseLoader
+from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain.vectorstores import Chroma
+from langchain.tools.retriever import create_retriever_tool
+import uuid
+
+urls = [
+    "https://blog.isqi.org/10-quality-problems-ai",
+    "https://www.jisc.ac.uk/guides/developing-high-quality-question-and-answer-sets-for-chatbots",
+    "https://sloanreview.mit.edu/article/the-no-1-question-to-ask-when-evaluating-ai-tools/",
+    "https://dzone.com/articles/how-to-test-ai-models-an-introduction-guide-for-qa-1",
+    "https://www.thepromptengineer.org/master-the-art-of-prompt-engineering-unlock-the-full-potential-of-your-ai-assistant/",
+    "https://www.kdnuggets.com/2021/04/improving-model-performance-through-human-participation.html",
+    "https://towardsdatascience.com/text-sentiment-analysis-in-nlp-ce6baba6d466",
+    "https://towardsdatascience.com/sentiment-analysis-is-difficult-but-ai-may-have-an-answer-a8c447110357",
+    "https://www.kdnuggets.com/2018/08/emotion-sentiment-analysis-practitioners-guide-nlp-5.html",
+    "https://towardsdatascience.com/a-guide-to-text-classification-and-sentiment-analysis-2ab021796317",
+    "https://dzone.com/articles/what-is-sentiment-analysis-and-how-to-perform-one",
+    "https://pub.towardsai.net/sentiment-analysis-opinion-mining-with-python-nlp-tutorial-d1f173ca4e3c",
+    "https://www.freecodecamp.org/news/what-is-sentiment-analysis-a-complete-guide-to-for-beginners",
+    "https://www.leewayhertz.com/reinforcement-learning-from-human-feedback",
+    "https://www.forbes.com/sites/edstacey/2021/04/09/what-humans-can-learn-from-human-in-the-loop-learning/",
+    "https://www.unite.ai/what-is-reinforcement-learning-from-human-feedback-rlhf/",
+    "https://www.kdnuggets.com/2021/04/improving-model-performance-through-human-participation.html",
+    "https://labelbox.com/blog/using-reinforcement-learning-from-human-feedback-to-fine-tune-large-language-models/",
+    "https://www.clarifai.com/blog/closing-the-loop-how-feedback-loops-help-to-maintain-quality-long-term-ai-results",
+    "https://blog.pangeanic.com/what-is-reinforcement-learning-from-human-feedback-rlhf-how-it-works"
+]
+
+def load_documentation(chroma, embeddings):
+    if not collection_exists(chroma, "langchain_tools"):
+        loader = WebBaseLoader(urls)
+        data = loader.load()
+
+        text_splitter = RecursiveCharacterTextSplitter(
+            chunk_size=1000, chunk_overlap=200
+        )
+        documents = text_splitter.split_documents(data)
+
+        collection = chroma.create_collection("langchain_tools")
+        for doc in documents:
+            collection.add(
+                ids=[str(uuid.uuid1())],
+                embeddings=embeddings.embed_documents([doc.page_content]),
+                metadatas=[doc.metadata],
+                documents=[doc.page_content]
+            )
+
+load_documentation(chroma, embeddings)
+
+ai_quality_retriever_tool = create_retriever_tool(
+    Chroma(client=chroma, collection_name="langchain_tools", embedding_function=embeddings).as_retriever(),
+    "ai_quality_search",
+    "Search for information about AI quality, sentiment analysis, and human feedback in AI. Use this tool for questions related to improving AI responses, sentiment analysis techniques, and incorporating human feedback in AI systems."
+)
+Tool 
+
+import uuid
+from langchain_community.document_loaders import WebBaseLoader
+from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain.tools.retriever import create_retriever_tool
+from langchain.vectorstores import Chroma
+
+urls = [
+    "https://www.jisc.ac.uk/guides/developing-high-quality-question-and-answer-sets-for-chatbots",
+    "https://www.thepromptengineer.org/master-the-art-of-prompt-engineering-unlock-the-full-potential-of-your-ai-assistant/",
+    "https://neptune.ai/blog/improving-ml-model-performance",
+    "https://towardsdatascience.com/sentiment-analysis-with-deep-learning-62d4d0166ef6?gi=9be792ec5f71",
+    "https://www.expert.ai/blog/sentiment-analysis-how-artificial-intelligence-captures-voice-of-customer/",
+    "https://www.freecodecamp.org/news/what-is-sentiment-analysis-a-complete-guide-to-for-beginners",
+    "https://www.leewayhertz.com/reinforcement-learning-from-human-feedback",
+    "https://www.deepmind.com/blog/learning-through-human-feedback",
+    "https://www.clarifai.com/blog/closing-the-loop-how-feedback-loops-help-to-maintain-quality-long-term-ai-results",
+    "https://levity.ai/blog/human-in-the-loop#:~:text=Human-in-the-loop%20aims%20to%20achieve%20what%20neither,of%20a%20continuous%20feedback%20loop."
+]
+
+def load_documentation(chroma, embeddings):
+    collection_name = "langchain_tools"
+    if not collection_exists(chroma, collection_name):
+        loader = WebBaseLoader(urls)
+        data = loader.load()
+
+        documents = RecursiveCharacterTextSplitter(
+            chunk_size=1000, chunk_overlap=200
+        ).split_documents(data)
+
+        collection = chroma.create_collection(collection_name)
+        for doc in documents:
+            emb = embeddings.embed_documents([doc.page_content])
+            collection.add(
+                ids=[str(uuid.uuid1())], embeddings=emb, metadatas=doc.metadata, documents=doc.page_content
+            )
+
+load_documentation(chroma, embeddings)
+
+chroma_db = Chroma(
+    client=chroma,
+    collection_name="langchain_tools",
+    embedding_function=embeddings,
+)
+
+answer_refiner_tool = create_retriever_tool(
+    chroma_db.as_retriever(),
+    "answer_refiner_search",
+    "Search for information about refining answers, performing sentiment analysis, and learning from human edits. Use this tool for questions related to maintaining high-quality responses and adapting to user feedback and sentiment."
+)
+Tool 
+
+import uuid
+from langchain.schema import Document
+from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain.tools.retriever import create_retriever_tool
+from langchain.vectorstores.chroma import Chroma
+
+def load_documentation(chroma, embeddings):
+    if not collection_exists(chroma, "langchain_tools"):
+        agent_description = """This agent handles the posting of responses, monitors user feedback, and manages the ticketing system. 
+        This agent is essential for managing the final stages of response delivery and handling user feedback.: Ensures posted responses meet server's communication standards, ; response_guidelines"""
+        
+        doc = Document(page_content=agent_description, metadata={"source": "agent_description"})
+        
+        text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
+        documents = text_splitter.split_documents([doc])
+        
+        collection = chroma.create_collection("langchain_tools")
+        
+        for doc in documents:
+            emb = embeddings.embed_documents([doc.page_content])
+            collection.add(
+                ids=[str(uuid.uuid1())],
+                embeddings=emb,
+                metadatas=doc.metadata,
+                documents=doc.page_content
+            )
+
+load_documentation(chroma, embeddings)
+
+retriever = Chroma(
+    client=chroma,
+    collection_name="langchain_tools",
+    embedding_function=embeddings,
+).as_retriever()
+
+agent_description_tool = create_retriever_tool(
+    retriever,
+    "agent_description_search",
+    "Search for information about the agent's description, responsibilities, and guidelines. Use this tool for any questions about the agent's role and functions."
+)
+Tool 
+
+from langchain_community.document_loaders import WebBaseLoader
+from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain.vectorstores import Chroma
+from langchain.tools.retriever import create_retriever_tool
+import uuid
+
+urls = [
+    "https://www.veamly.com/blog-posts/prioritize-support-tickets",
+    "https://www.sentisum.com/library/how-to-properly-prioritize-customer-support-issues",
+    "https://www.freshworks.com/freshdesk/customer-support/prioritize-support-enquiry-blog/",
+    "https://www.vivantio.com/blog/the-problems-with-itils-approach-to-support-ticket-prioritization/",
+    "https://www.visionhelpdesk.com/5-ways-to-improve-the-efficiency-of-your-ticket-queue-management.html",
+    "https://www.jitbit.com/news/ticket-queue-management",
+    "https://www.teamsupport.com/blog/5-tips-for-defining-support-ticket-severity",
+    "https://www.atlassian.com/blog/halp/top-5-ways-to-prioritize-and-resolve-it-support-tickets-faster",
+    "https://customergauge.com/blog/customer-experiences-secret-weapon-responding-to-customer-feedback-fast",
+    "https://usersnap.com/blog/collecting-customer-feedback/",
+    "https://www.customerthermometer.com/customer-feedback/handling-customer-feedback/",
+    "https://www.salesforce.com/resources/articles/how-to-measure-customer-satisfaction/?bc=HA&sfdc-redirect=416",
+    "https://www.nngroup.com/articles/user-feedback/",
+    "https://www.feedbear.com/blog/how-to-collect-and-manage-customer-feedback",
+    "https://www.useresponse.com/blog/how-to-gather-quality-feedback/",
+    "https://www.surveymonkey.com/mp/customer-feedback-guide/"
+]
+
+def load_documentation(chroma, embeddings):
+    if not collection_exists(chroma, "langchain_tools"):
+        loader = WebBaseLoader(urls)
+        data = loader.load()
+
+        documents = RecursiveCharacterTextSplitter(
+            chunk_size=1000, chunk_overlap=200
+        ).split_documents(data)
+
+        collection = chroma.create_collection("langchain_tools")
+        for doc in documents:
+            emb = embeddings.embed_documents([doc.page_content])
+            collection.add(
+                ids=[str(uuid.uuid1())], embeddings=emb, metadatas=doc.metadata, documents=doc.page_content
+            )
+
+load_documentation(chroma, embeddings)
+
+chroma_retriever = Chroma(
+    client=chroma,
+    collection_name="langchain_tools",
+    embedding_function=embeddings,
+).as_retriever()
+
+server_guidelines = create_retriever_tool(
+    chroma_retriever,
+    "server_guidelines",
+    "Search for information about managing the ticketing system, prioritizing issues based on server policies, and handling user feedback. Use this tool for questions related to posting responses, monitoring user feedback, and managing the final stages of response delivery."
+)

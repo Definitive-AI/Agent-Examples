@@ -1,0 +1,23 @@
+
+
+Question Monitorcategory_priority_tagger, unified_database_query, unified_info_retrieval
+
+Categorization and Prioritization Agentcategory_priority_tagger
+
+Response Generator Agentdiscord_responder, unified_database_query
+
+Information Retrieval Agentunified_info_retrieval
+
+Analysis and Compilation Agentunified_database_query, unified_info_retrieval, data_analysis_documentation
+
+Analytics and Improvement Agentdata_analysis_documentation
+
+Monitoring and Identification Agentdiscord_api_tool, knowledge_base_query, discord_api, kbms_api
+
+Response Generation Agentknowledge_base_query, exa_search, exa_content_retrieval
+
+Response Review and Posting Agentdiscord_api, discord_api_tool
+
+Knowledge Management and Ticketing Agentkbms_api, schedule_review, cancel_review, list_reviews
+
+Analytics and Community Engagement Agentdata_analytics_and_reporting, user_feedback, community_engagement

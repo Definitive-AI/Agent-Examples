@@ -1,0 +1,219 @@
+[
+    {
+        "id": "1",
+        "name": "Monitoring and Discord Integration Agent",
+        "description": "This agent focuses on monitoring the Discord server, performing initial triage, and integrating with Discord's API.",
+        "tasks": [
+            {
+                "description": "Monitor and Identify Questions using Discord API",
+                "reasoning": "Essential for capturing and processing incoming questions",
+                "complexity": "3"
+            },
+            {
+                "description": "Categorize and Prioritize Questions",
+                "reasoning": "Helps in efficient handling of incoming queries",
+                "complexity": "3"
+            },
+            {
+                "description": "Initial Triage for Human Escalation",
+                "reasoning": "Ensures complex issues are directed to human moderators",
+                "complexity": "3"
+            },
+            {
+                "description": "Manage Discord-specific actions (e.g., creating private threads for complex issues)",
+                "reasoning": "Facilitates better organization of discussions within Discord",
+                "complexity": "2"
+            }
+        ],
+        "documentation": [
+            {
+                "description": "Server Guidelines and Rules",
+                "reasoning": "Needed to identify questions that may violate server rules or require special handling",
+                "location": "",
+                "variable_name": "server_guidelines"
+            },
+            {
+                "description": "Response Templates or Guidelines",
+                "reasoning": "Helps in initial categorization and prioritization of questions",
+                "location": "",
+                "variable_name": "response_guidelines"
+            }
+        ],
+        "trigger": "This agent is triggered continuously by new messages in the Discord server. It's the first agent in the process and doesn't require interaction with other agents to start.",
+        "reasoning": "This agent is crucial for the initial processing of incoming messages and ensuring proper routing of questions."
+    },
+    {
+        "id": "2",
+        "name": "Knowledge Base and FAQ Management Agent",
+        "description": "This agent manages the internal knowledge base, FAQ system, and integrates with external documentation sources.",
+        "tasks": [
+            {
+                "description": "Retrieve information from internal knowledge base and FAQ system",
+                "reasoning": "Provides quick access to existing information",
+                "complexity": "2"
+            },
+            {
+                "description": "Update Knowledge Base and FAQs",
+                "reasoning": "Ensures the knowledge base remains current and relevant",
+                "complexity": "3"
+            },
+            {
+                "description": "Integrate with official documentation and trusted websites",
+                "reasoning": "Expands the range of information available for answering questions",
+                "complexity": "3"
+            },
+            {
+                "description": "Manage multi-language support for knowledge base",
+                "reasoning": "Enables support for a diverse user base",
+                "complexity": "3"
+            }
+        ],
+        "documentation": [
+            {
+                "description": "Knowledge Base and FAQs",
+                "reasoning": "Core resource for retrieving and updating information",
+                "location": "",
+                "variable_name": "knowledge_base"
+            },
+            {
+                "description": "Official Documentation",
+                "reasoning": "Used to verify and supplement information in the knowledge base",
+                "location": "",
+                "variable_name": "official_docs"
+            },
+            {
+                "description": "Trusted Websites",
+                "reasoning": "Used for additional research and verification of information",
+                "location": "",
+                "variable_name": "trusted_websites"
+            }
+        ],
+        "trigger": "This agent is triggered when the Monitoring and Discord Integration Agent or the Answer Generation and NLP Agent requests information from the knowledge base or when updates to the knowledge base are proposed.",
+        "reasoning": "This agent is essential for maintaining and accessing the knowledge base, which is crucial for providing accurate and up-to-date information."
+    },
+    {
+        "id": "3",
+        "name": "Answer Generation and NLP Agent",
+        "description": "This agent focuses on generating answers using advanced language models and natural language processing.",
+        "tasks": [
+            {
+                "description": "Generate or Retrieve Answer using GPT or similar models",
+                "reasoning": "Provides intelligent and context-aware responses to user queries",
+                "complexity": "4"
+            },
+            {
+                "description": "Perform Natural Language Processing on user questions",
+                "reasoning": "Enhances understanding of user intent and context",
+                "complexity": "3"
+            },
+            {
+                "description": "Draft initial responses for admin review when necessary",
+                "reasoning": "Ensures human oversight for complex or sensitive issues",
+                "complexity": "3"
+            }
+        ],
+        "documentation": [
+            {
+                "description": "Knowledge Base and FAQs",
+                "reasoning": "Primary source for generating answers to user questions",
+                "location": "",
+                "variable_name": "knowledge_base"
+            },
+            {
+                "description": "Official Documentation",
+                "reasoning": "Used to supplement knowledge base information when generating answers",
+                "location": "",
+                "variable_name": "official_docs"
+            },
+            {
+                "description": "Response Templates or Guidelines",
+                "reasoning": "Ensures generated answers adhere to server's communication standards",
+                "location": "",
+                "variable_name": "response_guidelines"
+            }
+        ],
+        "trigger": "This agent is triggered when the Monitoring and Discord Integration Agent passes a categorized and prioritized question that requires an answer.",
+        "reasoning": "This agent is crucial for generating intelligent and contextually appropriate responses to user queries."
+    },
+    {
+        "id": "4",
+        "name": "Quality Assurance and Sentiment Analysis Agent",
+        "description": "This agent refines answers, performs sentiment analysis, and learns from human edits.",
+        "tasks": [
+            {
+                "description": "Refine and Polish Answers",
+                "reasoning": "Ensures high-quality and appropriate responses",
+                "complexity": "3"
+            },
+            {
+                "description": "Perform Sentiment Analysis on user questions and interactions",
+                "reasoning": "Helps in understanding user emotions and tailoring responses accordingly",
+                "complexity": "3"
+            },
+            {
+                "description": "Learn from Human Edits",
+                "reasoning": "Continuously improves the quality of AI-generated responses",
+                "complexity": "4"
+            }
+        ],
+        "documentation": [
+            {
+                "description": "Server Guidelines and Rules",
+                "reasoning": "Used to ensure responses align with server policies and to identify potentially sensitive issues",
+                "location": "",
+                "variable_name": "server_guidelines"
+            },
+            {
+                "description": "Response Templates or Guidelines",
+                "reasoning": "Used to refine and polish answers before posting",
+                "location": "",
+                "variable_name": "response_guidelines"
+            }
+        ],
+        "trigger": "This agent is triggered when the Answer Generation and NLP Agent produces a draft answer or when user feedback is received on a posted answer.",
+        "reasoning": "This agent is vital for maintaining high-quality responses and adapting to user feedback and sentiment."
+    },
+    {
+        "id": "5",
+        "name": "Response Management and Feedback Agent",
+        "description": "This agent handles the posting of responses, monitors user feedback, and manages the ticketing system.",
+        "tasks": [
+            {
+                "description": "Post AI-generated Responses using Discord API",
+                "reasoning": "Ensures timely delivery of responses to users",
+                "complexity": "2"
+            },
+            {
+                "description": "Monitor User Feedback and Reactions",
+                "reasoning": "Allows for continuous improvement based on user satisfaction",
+                "complexity": "3"
+            },
+            {
+                "description": "Manage Ticketing or Tagging System",
+                "reasoning": "Helps in organizing and tracking complex or ongoing issues",
+                "complexity": "3"
+            },
+            {
+                "description": "Track Response Times and Generate Reports",
+                "reasoning": "Provides insights into system performance and areas for improvement",
+                "complexity": "2"
+            }
+        ],
+        "documentation": [
+            {
+                "description": "Response Templates or Guidelines",
+                "reasoning": "Ensures posted responses meet server's communication standards",
+                "location": "",
+                "variable_name": "response_guidelines"
+            },
+            {
+                "description": "Server Guidelines and Rules",
+                "reasoning": "Used to manage the ticketing system and prioritize issues based on server policies",
+                "location": "",
+                "variable_name": "server_guidelines"
+            }
+        ],
+        "trigger": "This agent is triggered when the Quality Assurance and Sentiment Analysis Agent approves an answer for posting, or when new user feedback is detected on a posted answer.",
+        "reasoning": "This agent is essential for managing the final stages of response delivery and handling user feedback."
+    }
+]

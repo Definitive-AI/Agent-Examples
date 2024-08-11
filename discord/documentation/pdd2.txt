@@ -1,0 +1,105 @@
+Process Definition Document: Discord Server Admin Question Handling
+
+Process Overview and Objectives
+This process outlines the steps a Discord server admin takes to monitor their server, identify user questions, research answers, and provide responses. The primary objective is to maintain an engaged and informed community by providing timely and accurate answers to user inquiries.
+Scope and Boundaries
+Scope:
+
+
+Monitoring Discord server activity
+Identifying and prioritizing user questions
+Researching answers to user questions
+Formulating and posting responses
+Tracking question resolution
+
+Out of Scope:
+
+Server moderation for non-question-related issues
+Technical maintenance of the Discord server
+Creation of server content unrelated to question responses
+
+Step 1: Monitor Discord Server
+
+Log into Discord and access the server
+Review new messages across all relevant channels
+Identify any unresolved questions or inquiries from users
+
+Step 2: Prioritize Questions
+
+Assess the urgency and importance of each identified question
+Categorize questions based on topic or complexity
+Create a queue of questions to be addressed
+
+Step 3: Research Answers
+
+For each question, gather necessary information from available resources
+Consult documentation, previous discussions, or external sources as needed
+Compile relevant information for crafting a response
+
+Step 4: Formulate Response
+
+Draft a clear and concise answer to the question
+Ensure the response addresses all aspects of the user's inquiry
+Review the response for accuracy and completeness
+
+Step 5: Post Response
+
+Reply to the user's question in the appropriate Discord channel
+Tag the user to ensure they are notified of the response
+Include any relevant links or additional resources in the reply
+
+Step 6: Track Resolution
+
+Mark the question as resolved in the admin's tracking system
+Monitor the thread for any follow-up questions or clarifications
+Update the resolution status if further action is required
+
+Step 7: Continuous Improvement
+
+Regularly review common questions to identify potential FAQ topics
+Update server resources or pinned messages to address frequent inquiries
+Analyze response times and user satisfaction to improve the process
+
+
+Roles and Responsibilities
+Discord Server Admin:
+
+Monitor server activity
+Identify and prioritize questions
+Research and formulate responses
+Post answers and track resolution
+Maintain and improve the question-handling process
+
+
+Inputs and Outputs
+
+Inputs:
+
+User questions posted in Discord channels
+Server guidelines and rules
+Knowledge base and documentation
+External research sources
+
+Outputs:
+
+Researched and formulated responses
+Updated FAQ or pinned messages
+Question resolution tracking data
+
+
+Required Resources and Systems
+
+Discord application tool
+Knowledge base or documentation system
+Question tracking system (could be a spreadsheet or dedicated software)
+
+
+Exception Handling and Error Scenarios
+
+For complex questions: Escalate to subject matter experts or create a dedicated thread for in-depth discussion
+For inappropriate questions: Address according to server guidelines and moderation policies
+For time-sensitive questions: Implement a flagging system to prioritize urgent inquiries
+For unclear questions: Request clarification from the user
+
+
+Should only be 4 agents, max

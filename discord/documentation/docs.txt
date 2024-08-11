@@ -1,0 +1,23 @@
+Documentation
+
+a. Knowledge Base and FAQs
+i. Reasoning: The process description mentions "internal knowledge base" and "FAQ system" multiple times. These resources would be crucial for the AI agent to provide accurate and consistent answers to common questions. They would serve as the primary source of information for the AI to draw upon when responding to user inquiries.
+ii. Location: Not specified in the process description. Typically, this would be an internal database or document management system accessible to the AI agent.
+
+b. Server Guidelines and Rules
+i. Reasoning: The process description mentions "Server guidelines and rules" as one of the inputs. The AI agent would need access to these to ensure all responses align with the server's policies and to help address questions related to community standards.
+ii. Location: Not specified in the process description. Often, these are pinned messages in a dedicated channel or stored in a separate document accessible to admins.
+
+c. Official Documentation
+i. Reasoning: The process description mentions using "official documentation" as part of the research process. This could refer to technical documentation, product manuals, or official guides related to the server's topic or purpose.
+ii. Location: Not specified in the process description. These would likely be external resources, possibly hosted on official websites or in specialized documentation systems.
+
+d. Trusted Websites
+i. Reasoning: The process description lists "trusted websites" as a resource for conducting research. The AI agent would need a curated list of reliable sources to reference when answering more complex questions.
+ii. Location: Not specified in the process description. This could be a maintained list within the knowledge base or a separate document listing approved external resources.
+
+e. Response Templates or Guidelines
+i. Reasoning: While not explicitly mentioned, the emphasis on maintaining a consistent tone and providing clear responses suggests that some form of response guidelines or templates would be beneficial for the AI agent.
+ii. Location: Not specified in the process description. These would likely be part of the internal knowledge base or a separate style guide document.
+
+The process description does not provide any specific documentation links or document names. It only refers to general categories of resources such as "official documentation," "trusted websites," and "internal knowledge base." The lack of specific links or names suggests that these resources would need to be defined and made accessible to the AI agent as part of the implementation process. The exact nature and location of these resources would depend on the specific Discord server's topic, purpose, and organizational structure.

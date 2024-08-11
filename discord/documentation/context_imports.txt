@@ -1,0 +1,39 @@
+```json
+[
+    {
+        "name": "collection_exists",
+        "description": "Checks if a collection with the given name exists in the Chroma database"
+    }
+]
+``````json
+[
+    {
+        "name": "question_detection_search",
+        "description": "Search for information about question detection and categorization. Use this tool for any questions related to identifying and categorizing questions within a given context!"
+    },
+    {
+        "name": "nlp_qa_search",
+        "description": "Search for information about Natural Language Processing, Question Answering, and related topics. Use this tool for questions about NLP techniques, QA systems, and AI-based text processing."
+    },
+    {
+        "name": "qa_system_search",
+        "description": "Search for information about question answering systems. Use this tool for queries related to creating or retrieving appropriate responses, utilizing knowledge bases and external resources."
+    },
+    {
+        "name": "discord_bot_response_preparation",
+        "description": "Search for information about Discord bot response preparation, formatting, and posting guidelines. Use this tool for questions related to ensuring quality, consistency, and appropriateness of responses before posting to the Discord server."
+    },
+    {
+        "name": "discord_guidelines_search",
+        "description": "Search for Discord guidelines, moderation practices, and community safety information. Use this tool for any questions related to Discord server management and best practices."
+    },
+    {
+        "name": "knowledge_management_search",
+        "description": "Search for information about knowledge management and ticketing systems. Use this tool for questions related to maintaining knowledge bases, improving system knowledge, tracking questions, and managing ticketing systems. This tool provides insights on AI-powered knowledge management, building knowledge bases, and best practices for ticketing systems."
+    },
+    {
+        "name": "community_engagement_search",
+        "description": "Search for information about data collection, reporting, and community engagement initiatives. Use this tool for questions related to monitoring system performance, improving user satisfaction, and fostering community engagement."
+    }
+]
+```
